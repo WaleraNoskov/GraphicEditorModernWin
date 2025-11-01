@@ -17,8 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6901" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251003001" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GraphicEditorModernWin.StandartPack\GraphicEditorModernWin.StandartPack.csproj" />
   </ItemGroup>
 
     <!-- Publish Properties -->
