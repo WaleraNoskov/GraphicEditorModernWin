@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using GraphicEditorModernWin.Core.Contracts;
 using GraphicEditorModernWin.Core.ValueTypes;
 
 namespace GraphicEditorModernWin.Core.Services;
 
-public interface IHistoryService
+public interface ICommandManager
 {
-	IReadOnlyCollection<HistoryEntry> History { get; }
-	void Push(ICommand command, CommandResult commandResult);
-	HistoryEntry? Pop();
+	Result<CommandResult> Invoke<TCommand>(TCommand command) where TCommand : ICommand;
+	Result Undo();
 }

@@ -20,8 +20,9 @@ public class HistoryService : IHistoryService
         _history.Push(newEntry);
 	}
 
-    public HistoryEntry Pop()
+    public HistoryEntry? Pop()
     {
-        return _history.Pop();
+        var gotEntry = _history.TryPop(out var entry);
+        return entry;
 	}
 }

@@ -13,4 +13,5 @@ internal static class BusinessToOpenCvSharpTools
 	internal static Point ToPoint(this Position position) => new(position.X, position.Y);
     internal static Scalar ToScalar(this Bgra color) => new(color.B, color.G, color.R, color.A);
 	internal static Rectangle ToRectangle(this Rect rect) => new(new Position(rect.Left, rect.Top), new Core.ValueTypes.Size(rect.Width, rect.Height));
+	internal static Rect ToRect(this Rectangle rectangle) => new(rectangle.Position.X, rectangle.Position.Y, rectangle.Size.Width, rectangle.Size.Height);
 }
