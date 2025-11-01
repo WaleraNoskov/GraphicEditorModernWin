@@ -1,4 +1,5 @@
-﻿using GraphicEditorModernWin.StandartPack;
+﻿using GraphicEditorModernWin.Feature.Shared.Services;
+using GraphicEditorModernWin.StandartPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -44,7 +45,9 @@ namespace GraphicEditorModernWin
         {
             services.AddStandartPackServices();
 
-            services.AddTransient<MainWindow>();
+            services.AddSingleton<BrushStateService>();
+
+			services.AddTransient<MainWindow>();
 		}
 	}
 }

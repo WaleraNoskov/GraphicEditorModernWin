@@ -1,5 +1,8 @@
-﻿using GraphicEditorModernWin.Core.Services;
+﻿using GraphicEditorModernWin.Core.Contracts;
+using GraphicEditorModernWin.Core.Services;
+using GraphicEditorModernWin.StandartPack.Command;
 using GraphicEditorModernWin.StandartPack.CommandHandlers;
+using GraphicEditorModernWin.StandartPack.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GraphicEditorModernWin.StandartPack;
@@ -10,7 +13,11 @@ public static class DependencyInjection
 	{
 		services
 			.AddSingleton<ILayersService, ILayersService>()
-			.AddSingleton<IHistoryService, IHistoryService>();
+			.AddSingleton<IHistoryService, IHistoryService>()
+			.AddSingleton<ICommandManager, CommandManager>();
+
+		services
+			.AddTransient<ICommandHandler<StrokeCommand>, StrokeCommandHandler>();
 
 		return services;
 	}
