@@ -1,16 +1,54 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace GraphicEditorModernWin.Feature.Shared.Framework.Commands.Base;
 
-internal abstract class BaseCommand : ICommand
+internal abstract class BaseCommand : ICommand, IDisposable
 {
-    public abstract bool CanExecute(object? parameter);
+	private EventHandler? _localHandlers;
 
-    public abstract void Execute(object? parameter);
+	protected BaseCommand()
+	{
+		// Подписываемся на глобальное событие CommandManager, как в WPF
+		CommandManager.RequerySuggested += OnRequerySuggested;
+	}
 
-    public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
-	
+	private void OnRequerySuggested(object? s, EventArgs e)
+	{
+		// Проксируем глобальное событие всем подписчикам
+		_localHandlers?.Invoke(this, EventArgs.Empty);
+	}
 
-	public event EventHandler? CanExecuteChanged;
+	public abstract bool CanExecute(object? parameter);
+	public abstract void Execute(object? parameter);
+
+	public event EventHandler? CanExecuteChanged
+	{
+		add => _localHandlers += value;
+		remove => _localHandlers -= value;
+	}
+
+	/// <summary>
+	/// Явно нотифицировать, что состояние CanExecute изменилось
+	/// (обычно вызывается владельцем команды).
+	/// </summary>
+	public void RaiseCanExecuteChanged() => _localHandlers?.Invoke(this, EventArgs.Empty);
+
+	#region IDisposable
+	private bool _disposed = false;
+	public virtual void Dispose()
+	{
+		if (_disposed) return;
+		CommandManager.RequerySuggested -= OnRequerySuggested;
+		_localHandlers = null;
+		_disposed = true;
+		GC.SuppressFinalize(this);
+	}
+
+	~BaseCommand() => Dispose();
+	#endregion
 }

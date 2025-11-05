@@ -1,4 +1,8 @@
-﻿using GraphicEditorModernWin.Feature.Shared.Services;
+﻿using GraphicEditorModernWin.Feature.ColorPalete.Busines;
+using GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget;
+using GraphicEditorModernWin.Feature.MainWindow;
+using GraphicEditorModernWin.Feature.Shared.Framework;
+using GraphicEditorModernWin.Feature.Shared.Services;
 using GraphicEditorModernWin.StandartPack;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,17 +39,27 @@ namespace GraphicEditorModernWin
         /// Invoked when the application is launched.
         /// </summary>
         /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            _window = AppHost.Services.GetRequiredService<MainWindow>();
+            CommandManager.InitializeForUiThread();
+
+
+			_window = AppHost.Services.GetRequiredService<MainWindow>();
 			_window.Activate();
         }
 
         private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
-            services.AddStandartPackServices();
+            services
+                .AddStandartPackServices();
 
-            services.AddSingleton<BrushStateService>();
+            services
+                .AddSingleton<BrushStateService>();
+
+            services
+                .AddTransient<ColorPaletteModel>()
+                .AddTransient<ColorPaletteWidgetViewModel>()
+                .AddTransient<ColorPaletteWidget>();
 
 			services.AddTransient<MainWindow>();
 		}

@@ -12,8 +12,8 @@ public static class DependencyInjection
 	public static IServiceCollection AddStandartPackServices(this IServiceCollection services)
 	{
 		services
-			.AddSingleton<ILayersService, ILayersService>()
-			.AddSingleton<IHistoryService, IHistoryService>()
+			.AddSingleton<ILayersService, LayersService>()
+			.AddSingleton<IHistoryService, HistoryService>()
 			.AddSingleton<ICommandManager, CommandManager>();
 
 		services

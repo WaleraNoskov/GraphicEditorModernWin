@@ -55,7 +55,7 @@ internal class NotifyPropertyChangedBase : INotifyPropertyChanged
 		_disposed = true;
 	}
 
-	~BaseViewModel()
+	~NotifyPropertyChangedBase()
 	{
 		Dispose(false);
 	}
