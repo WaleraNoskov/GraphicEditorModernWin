@@ -23,10 +23,19 @@ internal class ColorPaletteWidgetViewModel : NotifyPropertyChangedBase
 
 		SetPrimaryColorCommand = new RelayCommand<Bgra>(OnSetPrimaryColor);
         SetSecondaryColorCommand = new RelayCommand<Bgra>(OnSetSecondaryColor);
+        InitializeCommand = new RelayCommand(OnInitializeCommandExecuted);
 	}
 
-    public ReadOnlyObservableCollection<Bgra> Colors => _model.Colors;
-    public Bgra PrimaryColor => _model.PrimaryColor;
+    public ReadOnlyObservableCollection<BgraViewModel> Colors => new ReadOnlyObservableCollection<BgraViewModel>(new ObservableCollection<BgraViewModel>(_model.Colors.Select(c => new BgraViewModel(c))));
+
+    private BgraViewModel _selectedColor;
+    public BgraViewModel SelectedColor
+    {
+        get => _selectedColor;
+        set => SetField(ref _selectedColor, value);
+	}
+
+	public Bgra PrimaryColor => _model.PrimaryColor;
     public Bgra SecondaryColor => _model.SecondaryColor;
 
 	public ICommand SetPrimaryColorCommand { get; private set; }
@@ -34,4 +43,10 @@ internal class ColorPaletteWidgetViewModel : NotifyPropertyChangedBase
 
     public ICommand SetSecondaryColorCommand { get; private set; }
     private void OnSetSecondaryColor(Bgra color) => _model.SetSecondaryColor(color);
+
+    public ICommand InitializeCommand { get; private set; }
+    private void OnInitializeCommandExecuted()
+    {
+        _model.Initialize();
+    }
 }

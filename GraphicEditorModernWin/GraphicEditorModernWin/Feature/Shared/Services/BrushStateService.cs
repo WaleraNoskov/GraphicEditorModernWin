@@ -6,14 +6,14 @@ namespace GraphicEditorModernWin.Feature.Shared.Services;
 internal class BrushStateService : NotifyPropertyChangedBase
 {
     private Bgra _bgra;
-    public Bgra PrimaryBrush
+    public Bgra PrimaryColor
     {
         get => _bgra;
         set => SetField(ref _bgra, value);
     }
 
     private Bgra _secondaryBrush;
-    public Bgra SecondaryBrush
+    public Bgra SecondaryColor
     {
         get => _secondaryBrush;
         set => SetField(ref _secondaryBrush, value);

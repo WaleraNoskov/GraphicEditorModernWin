@@ -8,51 +8,87 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:converters="using:GraphicEditorModernWin.Feature.ColorPalete.Presentation.Converters"
+	xmlns:valueTypes="using:GraphicEditorModernWin.Core.ValueTypes"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance local:ColorPaletteWidgetViewModel}">
 	<UserControl.Resources>
 		<converters:BgraToWinColorColverter x:Key="BgraToWinColorConverter"/>
 		<converters:BgraToWinBrushColorConverter x:Key="BgraToWinBrushColorConverter"/>
 	</UserControl.Resources>
-    <StackPanel Orientation="Horizontal">
-        <SplitButton>
-			<Border Width="32" Height="32" Background="{Binding PrimaryColor, Converter={StaticResource BgraToWinBrushColorConverter}, Mode=OneWay}"/>
-			<SplitButton.Flyout>
-                <Flyout>
-                    <Flyout.SystemBackdrop>
-                        <DesktopAcrylicBackdrop/>
-                    </Flyout.SystemBackdrop>
-                    <ColorPicker x:Name="PrimaryColorPicker" IsAlphaEnabled="True" IsAlphaSliderVisible="True" IsAlphaTextInputVisible="True" ColorSpectrumShape="Ring">
-						<interactivity:Interaction.Behaviors>
-							<interactivity:EventTriggerBehavior EventName="ColorChanged">
-							    <interactivity:InvokeCommandAction
-                                    Command="{Binding SetPrimaryColorCommand}" 
-                                    CommandParameter="{x:Bind PrimaryColorPicker.Color, Mode=OneWay, Converter={StaticResource BgraToWinColorConverter}}"/>
-							</interactivity:EventTriggerBehavior>
-						</interactivity:Interaction.Behaviors>
-					</ColorPicker>
-                </Flyout>
-            </SplitButton.Flyout>
-        </SplitButton>
-
-		<SplitButton>
-			<Border Width="32" Height="32" Background="{Binding SecondaryColor, Converter={StaticResource BgraToWinBrushColorConverter}, Mode=OneWay}"/>
+	<interactivity:Interaction.Behaviors>
+		<interactivity:EventTriggerBehavior EventName="Loaded">
+			<interactivity:InvokeCommandAction Command="{Binding InitializeCommand}"/>
+		</interactivity:EventTriggerBehavior>
+	</interactivity:Interaction.Behaviors>
+	<StackPanel Orientation="Horizontal">
+        <SplitButton x:Name="PrimaryColor" Padding="0">
+			<Border Width="32" Height="32" Background="{Binding PrimaryColor, Converter={StaticResource BgraToWinBrushColorConverter}, Mode=OneWay}" CornerRadius="4,0,0,4"/>
 			<SplitButton.Flyout>
 				<Flyout>
-					<Flyout.SystemBackdrop>
-						<DesktopAcrylicBackdrop/>
-					</Flyout.SystemBackdrop>
-					<ColorPicker x:Name="SecondaryColorPicker" IsAlphaEnabled="True" IsAlphaSliderVisible="True" IsAlphaTextInputVisible="True" ColorSpectrumShape="Ring">
-						<interactivity:Interaction.Behaviors>
-							<interactivity:EventTriggerBehavior EventName="ColorChanged">
-								<interactivity:InvokeCommandAction
-                            Command="{Binding SetSecondaryColorCommand}" 
-                            CommandParameter="{x:Bind SecondaryColorPicker.Color, Mode=OneWay, Converter={StaticResource BgraToWinColorConverter}}"/>
-							</interactivity:EventTriggerBehavior>
-						</interactivity:Interaction.Behaviors>
-					</ColorPicker>
+					<RelativePanel>
+						<ColorPicker x:Name="PrimaryColorPicker" IsAlphaEnabled="True" IsAlphaSliderVisible="True" IsAlphaTextInputVisible="True" ColorSpectrumShape="Ring"/>
+
+						<Grid RelativePanel.Below="PrimaryColorPicker"
+							  RelativePanel.AlignLeftWithPanel="True"
+							  RelativePanel.AlignRightWithPanel="True">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition/>
+								<ColumnDefinition/>
+							</Grid.ColumnDefinitions>
+							<Button 
+								Content="Применить" 
+								Click="Button_Click"
+								Command="{Binding SetPrimaryColorCommand}" 
+								CommandParameter="{x:Bind PrimaryColorPicker.Color, Mode=OneWay, Converter={StaticResource BgraToWinColorConverter}}">
+							</Button>
+							<Button 
+								Content="Отмена" Click="CancelButton_Click" Grid.Column="1"/>
+						</Grid>
+					</RelativePanel>
+				</Flyout>
+			</SplitButton.Flyout>
+        </SplitButton>
+
+		<SplitButton x:Name="SecondaryColor" Padding="0">
+			<Border Width="32" Height="32" Background="{Binding SecondaryColor, Converter={StaticResource BgraToWinBrushColorConverter}, Mode=OneWay}" CornerRadius="4,0,0,4"/>
+			<SplitButton.Flyout>
+				<Flyout>
+					<RelativePanel>
+						<ColorPicker x:Name="SecondaryColorPicker" IsAlphaEnabled="True" IsAlphaSliderVisible="True" IsAlphaTextInputVisible="True" ColorSpectrumShape="Ring"/>
+
+						<Grid RelativePanel.Below="SecondaryColorPicker"
+							  RelativePanel.AlignLeftWithPanel="True"
+							  RelativePanel.AlignRightWithPanel="True">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition/>
+								<ColumnDefinition/>
+							</Grid.ColumnDefinitions>
+							<Button 
+								Content="Применить" 
+								Click="Button_Click"
+								Command="{Binding SetSecondaryColorCommand}" 
+								CommandParameter="{x:Bind SecondaryColorPicker.Color, Mode=OneWay, Converter={StaticResource BgraToWinColorConverter}}"/>
+							<Button 
+								Content="Отмена" Click="CancelButton_Click" Grid.Column="1"/>
+						</Grid>
+					</RelativePanel>
 				</Flyout>
 			</SplitButton.Flyout>
 		</SplitButton>
+
+		<GridView
+			IsItemClickEnabled="True"
+			ItemsSource="{Binding Colors}"
+			SelectedValue="{Binding SelectedColor}">
+			<GridView.ItemTemplate>
+				<DataTemplate x:DataType="valueTypes:Bgra">
+					<Border 
+						Width="32" 
+						Height="32"
+						Background="{Binding ., Converter={StaticResource BgraToWinBrushColorConverter}, Mode=OneWay}"
+						CornerRadius="4"/>
+				</DataTemplate>
+			</GridView.ItemTemplate>
+		</GridView>
 	</StackPanel>
 </UserControl>

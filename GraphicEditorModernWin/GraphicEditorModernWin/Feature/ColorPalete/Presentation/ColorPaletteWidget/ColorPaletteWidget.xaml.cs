@@ -26,4 +26,14 @@ public sealed partial class ColorPaletteWidget : UserControl
         InitializeComponent();
         DataContext = App.AppHost.Services.GetRequiredService<ColorPaletteWidgetViewModel>();
 	}
+
+    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    {
+        PrimaryColor.Flyout.Hide();
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        PrimaryColor.Flyout.Hide();
+	}
 }
