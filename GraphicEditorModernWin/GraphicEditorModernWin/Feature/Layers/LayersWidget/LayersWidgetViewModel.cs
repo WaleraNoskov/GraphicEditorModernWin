@@ -26,7 +26,7 @@ internal class LayersWidgetViewModel : NotifyPropertyChangedBase
         RemoveLayerCommand = new RelayCommand<Guid>(OnRemoveLayerCommandExecuted);
 	}
 
-    public ObservableCollection<LayerViewModel> Layers = [];
+    public ObservableCollection<LayerViewModel> Layers { get; } = [];
 
     private LayerViewModel? _selectedLayer;
     public LayerViewModel? SelectedLayer
