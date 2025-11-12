@@ -7,10 +7,7 @@ using GraphicEditorModernWin.Core.ValueTypes;
 
 namespace GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget;
 
-internal class BgraViewModel
+internal class BgraViewModel(Bgra value)
 {
-	public Bgra Value { get; }
-
-	public BgraViewModel(Bgra value) => Value = value;
-	
+    public Bgra Value { get; } = value;
 }

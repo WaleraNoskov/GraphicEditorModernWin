@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using GraphicEditorModernWin.Core.ValueTypes;
 using GraphicEditorModernWin.Feature.ColorPalete.Busines;
@@ -14,39 +9,65 @@ namespace GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWi
 
 internal class ColorPaletteWidgetViewModel : NotifyPropertyChangedBase
 {
-	private readonly ColorPaletteModel _model;
+    private readonly ColorPaletteModel _model;
 
     public ColorPaletteWidgetViewModel(ColorPaletteModel model)
     {
         _model = model;
-        _model.PropertyChanged += (s, e) => OnPropertyChanged(e.PropertyName);
+        _model.PropertyChanged += _model_PropertyChanged;
 
-		SetPrimaryColorCommand = new RelayCommand<Bgra>(OnSetPrimaryColor);
-        SetSecondaryColorCommand = new RelayCommand<Bgra>(OnSetSecondaryColor);
-        InitializeCommand = new RelayCommand(OnInitializeCommandExecuted);
-	}
+        SetColorCommand = new RelayCommand<Bgra?>(OnSetColorCommand);
+		InitializeCommand = new RelayCommand(OnInitializeCommandExecuted);
+    }
 
-    public ReadOnlyObservableCollection<BgraViewModel> Colors => new ReadOnlyObservableCollection<BgraViewModel>(new ObservableCollection<BgraViewModel>(_model.Colors.Select(c => new BgraViewModel(c))));
+    public ObservableCollection<BgraViewModel> Colors { get; } = [];
 
-    private BgraViewModel _selectedColor;
-    public BgraViewModel SelectedColor
+    private BgraViewModel? _selectedColor;
+    public BgraViewModel? SelectedColor
     {
         get => _selectedColor;
         set => SetField(ref _selectedColor, value);
-	}
+    }
 
-	public Bgra PrimaryColor => _model.PrimaryColor;
+    public Bgra PrimaryColor => _model.PrimaryColor;
     public Bgra SecondaryColor => _model.SecondaryColor;
 
-	public ICommand SetPrimaryColorCommand { get; private set; }
-    private void OnSetPrimaryColor(Bgra color) => _model.SetPrimaryColor(color);
+    private bool _isSecondaryColorSelecting;
+    public bool IsSecondaryColorSelecting
+    {
+        get => _isSecondaryColorSelecting;
+        set => SetField(ref _isSecondaryColorSelecting, value);
+    }
 
-    public ICommand SetSecondaryColorCommand { get; private set; }
-    private void OnSetSecondaryColor(Bgra color) => _model.SetSecondaryColor(color);
+    public ICommand SetColorCommand { get; private set; }
+    private void OnSetColorCommand(Bgra? color)
+    {
+        if (!color.HasValue)
+            return;
+
+        if (!IsSecondaryColorSelecting)
+            _model.SetPrimaryColor(color.Value);
+        else
+            _model.SetSecondaryColor(color.Value);
+
+        SelectedColor = null;
+	}
 
     public ICommand InitializeCommand { get; private set; }
     private void OnInitializeCommandExecuted()
     {
         _model.Initialize();
+    }
+
+    private void _model_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        OnPropertyChanged(e.PropertyName);
+
+        if (e.PropertyName == nameof(_model.Colors))
+        {
+            Colors.Clear();
+            foreach (var color in _model.Colors)
+                Colors.Add(new BgraViewModel(color));
+        }
     }
 }
