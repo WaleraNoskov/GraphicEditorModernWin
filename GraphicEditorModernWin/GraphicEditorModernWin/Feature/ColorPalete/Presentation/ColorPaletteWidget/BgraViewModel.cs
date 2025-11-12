@@ -9,5 +9,5 @@ namespace GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWi
 
 internal class BgraViewModel(Bgra value)
 {
-    public Bgra Value { get; } = value;
+	public Bgra Value { get; } = value;
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<UserControl
+	x:Class="GraphicEditorModernWin.Feature.Layers.LayersWidget.LayersWidget"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+	xmlns:local="using:GraphicEditorModernWin.Feature.Layers.LayersWidget"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	d:DataContext="{d:DesignInstance local:LayersWidgetViewModel}"
+	mc:Ignorable="d">
+	<interactivity:Interaction.Behaviors>
+		<interactivity:EventTriggerBehavior EventName="Loaded">
+			<interactivity:InvokeCommandAction Command="{Binding RestoreLayersCommand}" />
+		</interactivity:EventTriggerBehavior>
+	</interactivity:Interaction.Behaviors>
+
+	<StackPanel Padding="24,0">
+		<TextBlock
+			Margin="0,32,0,24"
+			Style="{StaticResource SubtitleTextBlockStyle}"
+			Text="Слои" />
+
+		<ListView ItemsSource="{Binding Layers}" SelectedItem="{Binding SelectedLayer}">
+			<ListView.ItemTemplate>
+				<DataTemplate x:DataType="local:LayerViewModel">
+					<TextBlock x:Phase="1" Text="{x:Bind Value.Id}" />
+				</DataTemplate>
+			</ListView.ItemTemplate>
+		</ListView>
+
+		<StackPanel Orientation="Horizontal">
+			<Button Command="{Binding AddLayerCommand}" Content="Add" />
+			<Button
+				Command="{Binding RemoveLayerCommand}"
+				CommandParameter="{Binding SelectedLayer}"
+				Content="Remove" />
+		</StackPanel>
+	</StackPanel>
+</UserControl>

@@ -9,4 +9,6 @@ public interface ILayersService
     public Layer? GetLayerById(Guid id);
     public void AddLayer(Layer layer, int order = -1);
     public void RemoveLayer(Guid id);
+
+    public event EventHandler? LayersChanged;
 }

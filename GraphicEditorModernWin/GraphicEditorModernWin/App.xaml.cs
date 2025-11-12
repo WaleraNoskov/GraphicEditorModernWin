@@ -1,5 +1,7 @@
-﻿using GraphicEditorModernWin.Feature.ColorPalete.Busines;
+﻿using GraphicEditorModernWin.Core.Services;
+using GraphicEditorModernWin.Feature.ColorPalete.Busines;
 using GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget;
+using GraphicEditorModernWin.Feature.Layers.LayersWidget;
 using GraphicEditorModernWin.Feature.MainWindow;
 using GraphicEditorModernWin.Feature.Shared.Framework;
 using GraphicEditorModernWin.Feature.Shared.Services;
@@ -43,6 +45,8 @@ namespace GraphicEditorModernWin
         {
             CommandManager.InitializeForUiThread();
 
+            var layersService = AppHost.Services.GetRequiredService<ILayersService>();
+            layersService.AddLayer(new Core.Entities.Layer(new Core.ValueTypes.Size(800, 600)));
 
 			_window = AppHost.Services.GetRequiredService<MainWindow>();
 			_window.Activate();
@@ -60,6 +64,10 @@ namespace GraphicEditorModernWin
                 .AddTransient<ColorPaletteModel>()
                 .AddTransient<ColorPaletteWidgetViewModel>()
                 .AddTransient<ColorPaletteWidget>();
+
+            services
+                .AddTransient<LayersWidgetViewModel>()
+                .AddTransient<LayersWidget>();
 
 			services.AddTransient<MainWindow>();
 		}

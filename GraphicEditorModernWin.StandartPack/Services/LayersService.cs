@@ -11,11 +11,15 @@ internal class LayersService : ILayersService
     public IReadOnlyCollection<Layer> Layers => _layers;
     public IReadOnlyDictionary<int, Guid> LayersOrder => _layersOrder;
 
-    public void AddLayer(Layer layer, int order = -1)
+    public event EventHandler? LayersChanged;
+
+	public void AddLayer(Layer layer, int order = -1)
     {
         _layers.Add(layer);
 
-        var lastIndex = _layersOrder.Keys.Max();
+        var lastIndex = _layersOrder.Count > 0
+            ? _layersOrder.Keys.Max()
+            : -1;
 
         if (order < 0 || order > lastIndex)
             _layersOrder.Add(lastIndex + 1, layer.Id);
@@ -30,7 +34,9 @@ internal class LayersService : ILayersService
             }
         }
         _layersOrder.Add(order, layer.Id);
-    }
+
+        LayersChanged?.Invoke(this, EventArgs.Empty);
+	}
 
     public Layer? GetLayerById(Guid id) => _layers.FirstOrDefault(l => l.Id == id);
 
@@ -55,5 +61,7 @@ internal class LayersService : ILayersService
                 _layersOrder.Add(key - 1, layerId);
             }
         }
-    }
+
+		LayersChanged?.Invoke(this, EventArgs.Empty);
+	}
 }

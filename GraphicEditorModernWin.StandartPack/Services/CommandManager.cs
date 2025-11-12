@@ -7,7 +7,7 @@ using CSharpFunctionalExtensions;
 using GraphicEditorModernWin.Core.Contracts;
 using GraphicEditorModernWin.Core.Services;
 using GraphicEditorModernWin.Core.ValueTypes;
-using GraphicEditorModernWin.StandartPack.Utils;
+using GraphicEditorModernWin.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using OpenCvSharp;
 

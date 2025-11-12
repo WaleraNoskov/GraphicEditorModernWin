@@ -6,6 +6,7 @@
   </Configurations>
   <Project Path="GraphicEditorModernWin.Core/GraphicEditorModernWin.Core.csproj" />
   <Project Path="GraphicEditorModernWin.StandartPack/GraphicEditorModernWin.StandartPack.csproj" Id="7c76db84-c2b4-40e3-9409-6b2ddb67c567" />
+  <Project Path="GraphicEditorModernWin.Utils/GraphicEditorModernWin.Utils.csproj" Id="fb08cc69-158f-4407-a155-10b8c97024d3" />
   <Project Path="GraphicEditorModernWin/GraphicEditorModernWin (Package)/GraphicEditorModernWin (Package).wapproj" Type="c7167f0d-bc9f-4e6e-afe1-012c56b48db5">
     <Deploy />
   </Project>

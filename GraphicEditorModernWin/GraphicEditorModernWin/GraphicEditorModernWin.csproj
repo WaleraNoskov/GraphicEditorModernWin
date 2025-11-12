@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Feature\ColorPalete\Presentation\ColorPaletteWidget\ColorPaletteWidget.xaml" />
+    <None Remove="Feature\Layers\LayersWidget\LayersWidget.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +41,12 @@
 
   <ItemGroup>
     <Folder Include="Feature\MainWindow\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Feature\Layers\LayersWidget\LayersWidget.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
     <!-- Publish Properties -->
