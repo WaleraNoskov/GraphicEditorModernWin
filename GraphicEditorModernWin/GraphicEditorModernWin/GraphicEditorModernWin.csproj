@@ -12,8 +12,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Feature\ColorPalete\View\**" />
+    <Content Remove="Feature\ColorPalete\View\**" />
+    <EmbeddedResource Remove="Feature\ColorPalete\View\**" />
+    <None Remove="Feature\ColorPalete\View\**" />
+    <Page Remove="Feature\ColorPalete\View\**" />
+    <PRIResource Remove="Feature\ColorPalete\View\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Feature\ColorPalete\ColorPaletteWidget\ColorPaletteWidget.xaml" />
-    <None Remove="Feature\Layers\LayersWidget\LayersWidget.xaml" />
     <None Remove="Pages\EditorPage.xaml" />
   </ItemGroup>
 
@@ -36,15 +43,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Feature\Layers\LayersWidget\LayersWidget.xaml">
+    <Page Update="Pages\EditorPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Pages\EditorPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Folder Include="Feature\ColorPalete\ColorPaletteWidget\" />
+    <Folder Include="Feature\Drawing\" />
+    <Folder Include="Feature\Layers\Views\" />
   </ItemGroup>
 
     <!-- Publish Properties -->

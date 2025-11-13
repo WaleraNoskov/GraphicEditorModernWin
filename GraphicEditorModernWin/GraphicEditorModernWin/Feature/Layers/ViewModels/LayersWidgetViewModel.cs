@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using GraphicEditorModernWin.Core.Entities;
 using GraphicEditorModernWin.Core.Services;
 using GraphicEditorModernWin.Feature.Shared.Framework;
 using GraphicEditorModernWin.Feature.Shared.Framework.Commands;
 
-namespace GraphicEditorModernWin.Feature.Layers.LayersWidget;
+namespace GraphicEditorModernWin.Feature.Layers.ViewModels;
 
 internal class LayersWidgetViewModel : NotifyPropertyChangedBase
 {

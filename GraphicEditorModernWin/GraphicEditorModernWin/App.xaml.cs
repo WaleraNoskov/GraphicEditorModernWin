@@ -1,13 +1,11 @@
 ﻿using GraphicEditorModernWin.Core.Services;
-using GraphicEditorModernWin.Feature.Layers.LayersWidget;
 using GraphicEditorModernWin.Feature.Shared.Framework;
 using GraphicEditorModernWin.StandartPack;
-using GraphicEditorModernWin.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using GraphicEditorModernWin.CustomWindows;
-using GraphicEditorModernWin.Feature.ColorPalete.ColorPaletteWidget;
+using GraphicEditorModernWin.Feature.Layers.ViewModels;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

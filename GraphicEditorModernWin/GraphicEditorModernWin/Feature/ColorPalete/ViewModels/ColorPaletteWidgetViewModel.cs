@@ -7,7 +7,7 @@ using GraphicEditorModernWin.Core.ValueTypes;
 using GraphicEditorModernWin.Feature.Shared.Framework;
 using GraphicEditorModernWin.Feature.Shared.Framework.Commands;
 
-namespace GraphicEditorModernWin.Feature.ColorPalete.ColorPaletteWidget;
+namespace GraphicEditorModernWin.Feature.ColorPalete.ViewModels;
 
 internal class ColorPaletteWidgetViewModel : NotifyPropertyChangedBase
 {
