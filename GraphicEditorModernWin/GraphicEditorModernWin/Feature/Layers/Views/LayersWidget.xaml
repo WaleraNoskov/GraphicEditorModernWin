@@ -6,6 +6,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
 	xmlns:local="using:GraphicEditorModernWin.Feature.Layers.Views"
+	xmlns:viewModels="using:GraphicEditorModernWin.Feature.Layers.ViewModels"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	d:DataContext="{d:DesignInstance local:LayersWidgetViewModel}"
 	mc:Ignorable="d">
@@ -41,7 +42,7 @@
 					ItemsSource="{Binding Layers, Mode=OneWay}"
 					SelectedItem="{Binding SelectedLayer, Mode=TwoWay}">
 					<ListView.ItemTemplate>
-						<DataTemplate x:DataType="local:LayerViewModel">
+						<DataTemplate x:DataType="viewModels:LayerViewModel">
 							<TextBlock x:Phase="1" Text="{x:Bind Value.Id}" />
 						</DataTemplate>
 					</ListView.ItemTemplate>

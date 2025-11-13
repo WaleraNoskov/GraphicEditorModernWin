@@ -133,7 +133,7 @@
 					</Style>
 				</GridView.ItemContainerStyle>
 				<GridView.ItemTemplate>
-					<DataTemplate x:DataType="local:BgraViewModel">
+					<DataTemplate x:DataType="viewModels:BgraViewModel">
 						<Border
 							Width="32"
 							Height="32"

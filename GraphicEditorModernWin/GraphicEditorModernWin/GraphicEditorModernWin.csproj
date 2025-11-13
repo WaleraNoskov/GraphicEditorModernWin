@@ -21,6 +21,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Feature\ColorPalete\ColorPaletteWidget\ColorPaletteWidget.xaml" />
+    <None Remove="Feature\Drawing\CanvasControl.xaml" />
+    <None Remove="Feature\Drawing\DrawingWidget.xaml" />
     <None Remove="Pages\EditorPage.xaml" />
   </ItemGroup>
 
@@ -50,8 +52,20 @@
 
   <ItemGroup>
     <Folder Include="Feature\ColorPalete\ColorPaletteWidget\" />
-    <Folder Include="Feature\Drawing\" />
+    <Folder Include="Feature\Drawing\Views\" />
     <Folder Include="Feature\Layers\Views\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Feature\Drawing\DrawingWidget.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Feature\Drawing\CanvasControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
     <!-- Publish Properties -->

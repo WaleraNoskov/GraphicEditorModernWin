@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using GraphicEditorModernWin.CustomWindows;
 using GraphicEditorModernWin.Feature.Layers.ViewModels;
+using GraphicEditorModernWin.Feature.ColorPalete.ViewModels;
+using GraphicEditorModernWin.Feature.ColorPalete.Views;
+using GraphicEditorModernWin.Feature.Layers.Views;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
