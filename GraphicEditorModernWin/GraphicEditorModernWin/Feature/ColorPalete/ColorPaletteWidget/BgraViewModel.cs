@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GraphicEditorModernWin.Core.ValueTypes;
 
-namespace GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget;
+namespace GraphicEditorModernWin.Feature.ColorPalete.ColorPaletteWidget;
 
 internal class BgraViewModel(Bgra value)
 {

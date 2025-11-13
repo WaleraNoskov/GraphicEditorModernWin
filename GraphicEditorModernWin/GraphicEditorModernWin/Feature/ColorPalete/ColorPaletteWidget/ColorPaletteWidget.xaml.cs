@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Input;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget;
+namespace GraphicEditorModernWin.Feature.ColorPalete.ColorPaletteWidget;
 
 public sealed partial class ColorPaletteWidget : UserControl
 {

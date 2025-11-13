@@ -1,14 +1,13 @@
 ﻿using GraphicEditorModernWin.Core.Services;
-using GraphicEditorModernWin.Feature.ColorPalete.Busines;
-using GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget;
 using GraphicEditorModernWin.Feature.Layers.LayersWidget;
-using GraphicEditorModernWin.Feature.MainWindow;
 using GraphicEditorModernWin.Feature.Shared.Framework;
-using GraphicEditorModernWin.Feature.Shared.Services;
 using GraphicEditorModernWin.StandartPack;
+using GraphicEditorModernWin.Pages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using GraphicEditorModernWin.CustomWindows;
+using GraphicEditorModernWin.Feature.ColorPalete.ColorPaletteWidget;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -58,10 +57,6 @@ namespace GraphicEditorModernWin
                 .AddStandartPackServices();
 
             services
-                .AddSingleton<BrushStateService>();
-
-            services
-                .AddTransient<ColorPaletteModel>()
                 .AddTransient<ColorPaletteWidgetViewModel>()
                 .AddTransient<ColorPaletteWidget>();
 

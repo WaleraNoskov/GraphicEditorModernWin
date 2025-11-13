@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <UserControl
-	x:Class="GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget.ColorPaletteWidget"
+	x:Class="GraphicEditorModernWin.Feature.ColorPalete.ColorPaletteWidget.ColorPaletteWidget"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:converters="using:GraphicEditorModernWin.Feature.ColorPalete.Presentation.Converters"
+	xmlns:converters="using:GraphicEditorModernWin.Feature.ColorPalete.Converters"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-	xmlns:local="using:GraphicEditorModernWin.Feature.ColorPalete.Presentation.ColorPaletteWidget"
+	xmlns:local="using:GraphicEditorModernWin.Feature.ColorPalete.ColorPaletteWidget"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:valueTypes="using:GraphicEditorModernWin.Core.ValueTypes"
 	d:DataContext="{d:DesignInstance local:ColorPaletteWidgetViewModel}"

@@ -14,7 +14,8 @@ public static class DependencyInjection
 		services
 			.AddSingleton<ILayersService, LayersService>()
 			.AddSingleton<IHistoryService, HistoryService>()
-			.AddSingleton<ICommandManager, CommandManager>();
+			.AddSingleton<ICommandManager, CommandManager>()
+			.AddSingleton<IColorPaletteService, ColorPaletteService>();
 
 		services
 			.AddTransient<ICommandHandler<StrokeCommand>, StrokeCommandHandler>();

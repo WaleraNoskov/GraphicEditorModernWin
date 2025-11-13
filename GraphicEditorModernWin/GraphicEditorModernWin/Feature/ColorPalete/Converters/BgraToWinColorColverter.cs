@@ -2,7 +2,7 @@
 using GraphicEditorModernWin.Core.ValueTypes;
 using Microsoft.UI.Xaml.Data;
 
-namespace GraphicEditorModernWin.Feature.ColorPalete.Presentation.Converters;
+namespace GraphicEditorModernWin.Feature.ColorPalete.Converters;
 
 internal class BgraToWinColorColverter : IValueConverter
 {

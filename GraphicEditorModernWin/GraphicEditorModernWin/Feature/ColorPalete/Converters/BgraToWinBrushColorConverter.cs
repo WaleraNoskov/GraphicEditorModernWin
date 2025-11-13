@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
-namespace GraphicEditorModernWin.Feature.ColorPalete.Presentation.Converters;
+namespace GraphicEditorModernWin.Feature.ColorPalete.Converters;
 
 internal class BgraToWinBrushColorConverter : IValueConverter
 {
