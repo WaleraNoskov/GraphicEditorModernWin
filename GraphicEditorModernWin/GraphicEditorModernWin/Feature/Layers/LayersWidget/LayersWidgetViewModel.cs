@@ -67,5 +67,8 @@ internal class LayersWidgetViewModel : NotifyPropertyChangedBase
 		{
 			Layers.Add(new LayerViewModel(layer));
 		}
+
+        if (Layers.Count > 0)
+            SelectedLayer = Layers.Last();
 	}
 }

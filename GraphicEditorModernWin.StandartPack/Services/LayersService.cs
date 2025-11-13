@@ -13,7 +13,7 @@ internal class LayersService : ILayersService
 
     public event EventHandler? LayersChanged;
 
-	public void AddLayer(Layer layer, int order = -1)
+    public void AddLayer(Layer layer, int order = -1)
     {
         _layers.Add(layer);
 
@@ -33,10 +33,9 @@ internal class LayersService : ILayersService
                 _layersOrder.Add(key + 1, layerId);
             }
         }
-        _layersOrder.Add(order, layer.Id);
 
         LayersChanged?.Invoke(this, EventArgs.Empty);
-	}
+    }
 
     public Layer? GetLayerById(Guid id) => _layers.FirstOrDefault(l => l.Id == id);
 
@@ -44,24 +43,25 @@ internal class LayersService : ILayersService
     {
         var layer = _layers.FirstOrDefault(l => l.Id == id);
 
-        if (layer != null)
+        if (layer == null)
+            return;
+
+        _layers.Remove(layer);
+
+        var orderKey = _layersOrder.FirstOrDefault(kvp => kvp.Value == id).Key;
+        if (orderKey == 0 && !_layersOrder.ContainsKey(orderKey))
+            return;
+
+        _layersOrder.Remove(orderKey);
+        var keysToShift = _layersOrder.Keys.Where(k => k > orderKey).OrderBy(k => k).ToList();
+        foreach (var key in keysToShift)
         {
-            _layers.Remove(layer);
-
-            var orderKey = _layersOrder.FirstOrDefault(kvp => kvp.Value == id).Key;
-            if (orderKey == 0 && !_layersOrder.ContainsKey(orderKey))
-                return;
-
-            _layersOrder.Remove(orderKey);
-            var keysToShift = _layersOrder.Keys.Where(k => k > orderKey).OrderBy(k => k).ToList();
-            foreach (var key in keysToShift)
-            {
-                var layerId = _layersOrder[key];
-                _layersOrder.Remove(key);
-                _layersOrder.Add(key - 1, layerId);
-            }
+            var layerId = _layersOrder[key];
+            _layersOrder.Remove(key);
+            _layersOrder.Add(key - 1, layerId);
         }
 
-		LayersChanged?.Invoke(this, EventArgs.Empty);
-	}
+
+        LayersChanged?.Invoke(this, EventArgs.Empty);
+    }
 }

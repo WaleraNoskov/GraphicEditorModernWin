@@ -17,13 +17,25 @@
 
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="250" />
+			<ColumnDefinition Width="280" />
 			<ColumnDefinition />
-			<ColumnDefinition Width="250" />
+			<ColumnDefinition Width="280" />
 		</Grid.ColumnDefinitions>
 
-		<colorPaletteWidget:ColorPaletteWidget Margin="16,0,0,16" VerticalAlignment="Bottom" />
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition />
+		</Grid.RowDefinitions>
 
-		<layersWidget:LayersWidget Margin="0,0,16,16" VerticalAlignment="Top" />
+		<colorPaletteWidget:ColorPaletteWidget
+			Grid.Row="1"
+			Margin="16,0,0,16"
+			VerticalAlignment="Bottom" />
+
+		<layersWidget:LayersWidget
+			Grid.Row="1"
+			Grid.Column="2"
+			Margin="0,0,16,16"
+			VerticalAlignment="Bottom" />
 	</Grid>
 </Window>
