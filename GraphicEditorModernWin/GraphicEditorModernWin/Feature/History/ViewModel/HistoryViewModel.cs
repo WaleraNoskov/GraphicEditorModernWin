@@ -18,7 +18,7 @@ class HistoryViewModel : NotifyPropertyChangedBase
         _commandManager = commandManager;
 
         InitializeCommand = new RelayCommand(OnInitializeCommandExecuted);
-        UndoCommand = new RelayCommand(OnUndoCommandExecuted);
+        UndoCommand = new RelayCommand(OnUndoCommandExecuted, CanUndoCommandExecute);
     }
 
     public ObservableCollection<HistoryEntryViewModel> HistoryEntries { get; } = [];
@@ -26,13 +26,16 @@ class HistoryViewModel : NotifyPropertyChangedBase
     public ICommand InitializeCommand { get; private set; }
     private void OnInitializeCommandExecuted() => RestoreHistory();
 
-    public ICommand UndoCommand { get; private set; }
+    public RelayCommand UndoCommand { get; private set; }
     private void OnUndoCommandExecuted() => _commandManager.Undo();
+    private bool CanUndoCommandExecute() => _historyService.History.Count > 0;
 
     private void RestoreHistory()
     {
         HistoryEntries.Clear();
         foreach (var entry in _historyService.History)
-            HistoryEntries.Add(new HistoryEntryViewModel(nameof(entry.GetType), entry.IsUndoed));
+            HistoryEntries.Add(new HistoryEntryViewModel(entry.Command.GetType().Name, entry.IsUndoed));
+
+        UndoCommand.RaiseCanExecuteChanged();
     }
 }

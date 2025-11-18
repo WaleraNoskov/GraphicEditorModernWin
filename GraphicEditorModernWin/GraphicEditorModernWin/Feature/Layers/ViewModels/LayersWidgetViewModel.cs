@@ -20,7 +20,7 @@ internal class LayersWidgetViewModel : NotifyPropertyChangedBase
 
 		RestoreLayersCommand = new RelayCommand(OnRestoreLayersCommandExecuted);
         AddLayerCommand = new RelayCommand(OnAddLayer);
-        RemoveLayerCommand = new RelayCommand<Guid>(OnRemoveLayerCommandExecuted);
+        RemoveLayerCommand = new RelayCommand<Guid>(OnRemoveLayerCommandExecuted, CanRemoveCommandExecute);
 	}
 
     public ObservableCollection<LayerViewModel> Layers { get; } = [];
@@ -29,10 +29,14 @@ internal class LayersWidgetViewModel : NotifyPropertyChangedBase
     public LayerViewModel? SelectedLayer
     {
         get => _selectedLayer;
-        set => SetField(ref _selectedLayer, value);
-	}
+        set
+        {
+            SetField(ref _selectedLayer, value);
+            RemoveLayerCommand.RaiseCanExecuteChanged();
+        }
+    }
 
-	public ICommand RestoreLayersCommand { get; private set; }
+    public ICommand RestoreLayersCommand { get; private set; }
     private void OnRestoreLayersCommandExecuted()
     {
         RestoreLayers();
@@ -44,11 +48,12 @@ internal class LayersWidgetViewModel : NotifyPropertyChangedBase
         _layersService.AddLayer(new Core.ValueTypes.Bgra(0,0,0,0));
     }
 
-    public ICommand RemoveLayerCommand { get; private set; }
+    public RelayCommand<Guid> RemoveLayerCommand { get; private set; }
     private void OnRemoveLayerCommandExecuted(Guid id)
     {
         _layersService.RemoveLayer(id);
     }
+    private bool CanRemoveCommandExecute(Guid id) => SelectedLayer is not null;
 
     private void RestoreLayers()
     {
