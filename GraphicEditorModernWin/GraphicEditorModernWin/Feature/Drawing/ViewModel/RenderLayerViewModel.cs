@@ -39,11 +39,18 @@ internal class RenderLayerViewModel : NotifyPropertyChangedBase
 
 	private double _zoom = 1;
 	public double Zoom
-	{
-		get => _zoom;
-		set => SetField(ref _zoom, value);
-	}
+    {
+        get => _zoom;
+        set
+        {
+            SetField(ref _zoom, value);
+			OnPropertyChanged(nameof(ZoomedWidth));
+			OnPropertyChanged(nameof(ZoomedHeight));
+        }
+    }
 
+    public double ZoomedWidth => Bitmap.Width * Zoom;
+	public double ZoomedHeight => Bitmap.Height * Zoom;
 	public Bgra PrimaryColor => _colorPaletteService.PrimaryColor;
 
 	public RelayCommand<List<Vector2>> CommitStrokeCommand { get; private set; }

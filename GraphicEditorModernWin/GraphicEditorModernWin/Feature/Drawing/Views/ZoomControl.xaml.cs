@@ -68,9 +68,17 @@ internal sealed partial class ZoomControl : UserControl
 	private void IncreaseZoom_Click(object sender, RoutedEventArgs e) => IncreaseZoom();
 	private void DecreaseZoom_Click(object sender, RoutedEventArgs e) => DecreaseZoom();
 
-	private void IncreaseZoom() => Zoom += 0.1;
+    private void IncreaseZoom()
+    {
+		if(Zoom < 5)
+			Zoom += 0.1;
+    }
 
-	private void DecreaseZoom() => Zoom -= 0.1;
+    private void DecreaseZoom()
+    {
+		if(Zoom > 0.1)
+			Zoom -= 0.1;
+    }
 }
 public class ZoomChangedEventArgs : EventArgs
 {

@@ -51,12 +51,14 @@ internal sealed partial class RenderLayerControl : UserControl
     private void DrawingCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
         var p = e.GetCurrentPoint(DrawingCanvas);
-        if (!p.Properties.IsLeftButtonPressed)
+        if (!p.Properties.IsLeftButtonPressed || _viewModel is null)
             return;
 
         _isDrawing = true;
         _currentStroke.Clear();
-        _currentStroke.Add(p.Position.ToVector2());
+
+		var position = new Vector2((int)(p.Position.X / _viewModel.Zoom), (int)(p.Position.Y / _viewModel.Zoom));
+		_currentStroke.Add(position);
 
         DrawingCanvas.Invalidate();
     }
@@ -77,31 +79,37 @@ internal sealed partial class RenderLayerControl : UserControl
 
     private void DrawingCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
     {
-        if (!_isDrawing)
+        if (!_isDrawing || _viewModel is null)
             return;
 
         var p = e.GetCurrentPoint(DrawingCanvas);
         if (p.IsInContact)
         {
-            _currentStroke.Add(p.Position.ToVector2());
+            var position = new Vector2((int)(p.Position.X / _viewModel.Zoom), (int)(p.Position.Y / _viewModel.Zoom));
+            _currentStroke.Add(position);
             DrawingCanvas.Invalidate();
         }
     }
 
-    private void DrawingCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
+    private async void DrawingCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
     {
         if (_viewModel?.Bitmap is null)
             return;
+		var gotRenderTarget = RenderTargetFromMat(_viewModel.Bitmap);
+		if (gotRenderTarget.IsFailure)
+			return;
 
-        var drawingSession = args.DrawingSession;
+
+		var drawingSession = args.DrawingSession;
         drawingSession.Antialiasing = CanvasAntialiasing.Aliased;
         drawingSession.Transform = Matrix3x2.CreateScale((float)_viewModel.Zoom);
 
-        var gotRenderTarget = RenderTargetFromMat(_viewModel.Bitmap);
-        if (gotRenderTarget.IsFailure)
-            return;
+		DrawingCanvas.Width = _viewModel!.ZoomedWidth;
+		DrawingCanvas.Height = _viewModel!.ZoomedHeight;
+		CanvasBorder.Width = _viewModel!.ZoomedWidth;
+		CanvasBorder.Height = _viewModel!.ZoomedHeight;
 
-        args.DrawingSession.DrawImage(
+		args.DrawingSession.DrawImage(
             gotRenderTarget.Value,
             0, 0,
             new Windows.Foundation.Rect(0, 0, _viewModel.Bitmap.Width, _viewModel.Bitmap.Height),
