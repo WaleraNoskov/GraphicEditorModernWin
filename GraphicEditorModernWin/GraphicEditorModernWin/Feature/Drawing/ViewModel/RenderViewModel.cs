@@ -19,6 +19,7 @@ internal class RenderViewModel : NotifyPropertyChangedBase
         _layersService.LayersChanged += (_, _) => RestoreLayers();
 
         _commandManager = commandManager;
+
         _colorPaletteService = colorPaletteService;
 
         InitializeCommand = new RelayCommand(OnInitializeCommandExecuted);
@@ -45,7 +46,7 @@ internal class RenderViewModel : NotifyPropertyChangedBase
     {
         var layerViewModels = _layersService.Layers
             .OrderBy(l => l.Order)
-            .Select(l => new RenderLayerViewModel(l, _commandManager, _colorPaletteService))
+            .Select(l => new RenderLayerViewModel(l, _commandManager, _colorPaletteService, _layersService))
             .ToList();
 
         _layers.Clear();

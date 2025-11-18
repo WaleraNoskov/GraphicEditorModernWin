@@ -18,7 +18,8 @@ public static class DependencyInjection
 			.AddSingleton<IColorPaletteService, ColorPaletteService>();
 
 		services
-			.AddTransient<ICommandHandler<StrokeCommand>, StrokeCommandHandler>();
+			.AddTransient<ICommandHandler<StrokeCommand>, StrokeCommandHandler>()
+			.AddTransient<ICommandHandler<UndoCommand>, UndoCommandHandler>();
 
 		return services;
 	}

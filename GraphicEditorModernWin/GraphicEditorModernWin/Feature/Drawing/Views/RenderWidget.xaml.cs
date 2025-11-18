@@ -17,8 +17,6 @@ internal sealed partial class RenderWidget : UserControl
 
         DataContext = App.AppHost.Services.GetRequiredService<RenderViewModel>();
         _viewModel.PropertyChanged += _viewModel_PropertyChanged;
-
-        //CanvasScrollView.ZoomTo(0.5f, null);
     }
 
     private void _viewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

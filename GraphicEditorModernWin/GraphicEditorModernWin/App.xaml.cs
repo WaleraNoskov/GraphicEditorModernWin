@@ -11,6 +11,8 @@ using GraphicEditorModernWin.Feature.ColorPalete.Views;
 using GraphicEditorModernWin.Feature.Layers.Views;
 using GraphicEditorModernWin.Feature.Drawing.Views;
 using GraphicEditorModernWin.Feature.Drawing.ViewModel;
+using GraphicEditorModernWin.Feature.History.ViewModel;
+using GraphicEditorModernWin.Feature.History.View;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -66,6 +68,10 @@ namespace GraphicEditorModernWin
             services
                 .AddTransient<LayersWidgetViewModel>()
                 .AddTransient<LayersWidget>();
+
+            services
+                .AddTransient<HistoryViewModel>()
+                .AddTransient<HistoryWidget>();
 
             services
                 .AddTransient<RenderViewModel>()

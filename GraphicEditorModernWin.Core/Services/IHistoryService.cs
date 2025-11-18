@@ -6,6 +6,7 @@ namespace GraphicEditorModernWin.Core.Services;
 public interface IHistoryService
 {
 	IReadOnlyCollection<HistoryEntry> History { get; }
+	event EventHandler HistoryChanged;
 	void Push(ICommand command, CommandResult commandResult);
 	HistoryEntry? Pop();
 }

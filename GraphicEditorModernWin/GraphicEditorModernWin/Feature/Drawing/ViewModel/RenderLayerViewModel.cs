@@ -17,12 +17,15 @@ internal class RenderLayerViewModel : NotifyPropertyChangedBase
 {
 	private readonly ICommandManager _commandManager;
 	private readonly IColorPaletteService _colorPaletteService;
+	private readonly ILayersService _layersService;
 	private Layer _layer;
 
-    public RenderLayerViewModel(Layer layer, ICommandManager commandManager, IColorPaletteService colorPaletteService)
+    public RenderLayerViewModel(Layer layer, ICommandManager commandManager, IColorPaletteService colorPaletteService, ILayersService layersService)
 	{
 		_commandManager = commandManager;
 		_colorPaletteService = colorPaletteService;
+		_layersService = layersService;
+        _layersService.LayerChanged += _layersService_LayerChanged;
 		
 		_layer = layer;
 		_bitmap = _layer.Drawing;
@@ -30,7 +33,7 @@ internal class RenderLayerViewModel : NotifyPropertyChangedBase
 		CommitStrokeCommand = new RelayCommand<List<Vector2>>(OnCommitStrokeCommandExecuted);
 	}
 
-	private Mat _bitmap;
+    private Mat _bitmap;
 	public Mat Bitmap
 	{
 		get => _bitmap;
@@ -52,6 +55,9 @@ internal class RenderLayerViewModel : NotifyPropertyChangedBase
     public double ZoomedWidth => Bitmap.Width * Zoom;
 	public double ZoomedHeight => Bitmap.Height * Zoom;
 	public Bgra PrimaryColor => _colorPaletteService.PrimaryColor;
+	public Guid LayerId => _layer.Id;
+
+	public event EventHandler? LayerChanged;
 
 	public RelayCommand<List<Vector2>> CommitStrokeCommand { get; private set; }
 	private void OnCommitStrokeCommandExecuted(List<Vector2>? stroke)
@@ -63,5 +69,15 @@ internal class RenderLayerViewModel : NotifyPropertyChangedBase
 		var command = new StrokeCommand(_layer.Id, coreStroke, 1, _colorPaletteService.PrimaryColor);
 
 		_commandManager.Invoke(command);
+	}
+
+	private void _layersService_LayerChanged(object? sender, Guid e)
+	{
+		var newLayer = _layersService.GetLayerById(e);
+		if (newLayer is null)
+			return;
+
+		_layer = newLayer;
+		LayerChanged?.Invoke(this, EventArgs.Empty);
 	}
 }

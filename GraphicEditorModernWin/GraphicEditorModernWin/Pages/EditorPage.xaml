@@ -6,6 +6,7 @@
 	xmlns:colorPaletteWidget="using:GraphicEditorModernWin.Feature.ColorPalete.Views"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:drawingWidget="using:GraphicEditorModernWin.Feature.Drawing.Views"
+	xmlns:historyWidget="using:GraphicEditorModernWin.Feature.History.View"
 	xmlns:layersWidget="using:GraphicEditorModernWin.Feature.Layers.Views"
 	xmlns:local="using:GraphicEditorModernWin.Pages"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -35,5 +36,10 @@
 			Grid.Column="2"
 			Margin="0,0,16,16"
 			VerticalAlignment="Bottom" />
+
+		<historyWidget:HistoryWidget
+			Grid.Column="2"
+			Margin="0,16,16,0"
+			VerticalAlignment="Top" />
 	</Grid>
 </Page>

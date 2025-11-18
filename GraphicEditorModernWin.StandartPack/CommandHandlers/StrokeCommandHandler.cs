@@ -16,22 +16,17 @@ public class StrokeCommandHandler(ILayersService layersService) : ICommandHandle
 
         if(layer is null)
             return Result.Failure<CommandResult>($"Layer with id {command.LayerId} not found");
+		if (command.Positions.Count < 2)
+			return Result.Failure<CommandResult>("Not enough points to draw stroke");
 
 		var mat = layer.Drawing;
 		var points = command.Positions;
 		var color = command.Color; // Scalar(B, G, R, A)
 		var thickness = command.Thickness;
 
-		if (points.Count < 2)
-			return Result.Failure<CommandResult>("Not enough points to draw stroke");
-
-		// --- Вычисляем ограничивающий прямоугольник для истории ---
 		var region = GetBoundingRect(points, thickness);
-
-		// --- Сохраняем исходный фрагмент для Undo ---
 		var before = new Mat(mat, region).Clone();
 
-		// --- Рисуем штрих ---
 		for (int i = 1; i < points.Count; i++)
 		{
 			Cv2.Line(
@@ -44,14 +39,7 @@ public class StrokeCommandHandler(ILayersService layersService) : ICommandHandle
 			);
 		}
 
-		// --- Сглаживание углов штриха (необязательно, но красиво) ---
-		foreach (var point in points)
-			Cv2.Circle(mat, point.ToPoint(), thickness, color.ToScalar(), -1, LineTypes.AntiAlias);
-
-		// --- Сохраняем изменённый фрагмент ---
-		var after = new Mat(mat, region).Clone();
-
-		// --- Возвращаем результат ---
+		layersService.Edit(layer);
 		return Result.Success(new CommandResult(command.LayerId, region.ToRectangle(), before));
 	}
 
@@ -65,8 +53,8 @@ public class StrokeCommandHandler(ILayersService layersService) : ICommandHandle
 		return new Rect(
 			X: Math.Max(minX, 0),
 			Y: Math.Max(minY, 0),
-			Width: maxX - minX,
-			Height: maxY - minY
+			Width: maxX - minX + 1,
+			Height: maxY - minY + 1
 		);
 	}
 }

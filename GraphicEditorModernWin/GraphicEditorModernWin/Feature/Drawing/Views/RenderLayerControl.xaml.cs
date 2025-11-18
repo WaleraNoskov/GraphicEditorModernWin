@@ -36,6 +36,7 @@ internal sealed partial class RenderLayerControl : UserControl
 
         _viewModel?.Dispose();
         _viewModel = viewModel;
+        _viewModel.LayerChanged += (_, _) => DrawingCanvas.Invalidate();
         _viewModel.PropertyChanged += _viewModel_PropertyChanged;
     }
 
@@ -98,7 +99,6 @@ internal sealed partial class RenderLayerControl : UserControl
 		var gotRenderTarget = RenderTargetFromMat(_viewModel.Bitmap);
 		if (gotRenderTarget.IsFailure)
 			return;
-
 
 		var drawingSession = args.DrawingSession;
         drawingSession.Antialiasing = CanvasAntialiasing.Aliased;

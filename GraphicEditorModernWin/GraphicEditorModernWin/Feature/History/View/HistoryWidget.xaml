@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <UserControl
-	x:Class="GraphicEditorModernWin.Feature.Layers.Views.LayersWidget"
+	x:Class="GraphicEditorModernWin.Feature.History.View.HistoryWidget"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-	xmlns:local="using:GraphicEditorModernWin.Feature.Layers.Views"
-	xmlns:viewModels="using:GraphicEditorModernWin.Feature.Layers.ViewModels"
+	xmlns:local="using:GraphicEditorModernWin.Feature.History.View"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	d:DataContext="{d:DesignInstance viewModels:LayersWidgetViewModel}"
+	xmlns:viewModels="using:GraphicEditorModernWin.Feature.History.ViewModel"
+	d:DataContext="{d:DesignInstance viewModels:HistoryViewModel}"
 	mc:Ignorable="d">
+
 	<interactivity:Interaction.Behaviors>
 		<interactivity:EventTriggerBehavior EventName="Loaded">
-			<interactivity:InvokeCommandAction Command="{Binding RestoreLayersCommand}" />
+			<interactivity:InvokeCommandAction Command="{Binding InitializeCommand}" />
 		</interactivity:EventTriggerBehavior>
 	</interactivity:Interaction.Behaviors>
 
@@ -31,19 +32,16 @@
 			<TextBlock
 				Margin="0,32,0,24"
 				Style="{StaticResource SubtitleTextBlockStyle}"
-				Text="Слои" />
+				Text="История" />
 
 			<ScrollViewer
 				Grid.Row="1"
 				HorizontalScrollBarVisibility="Hidden"
 				VerticalScrollBarVisibility="Auto">
-				<ListView
-					Margin="0,0,0,16"
-					ItemsSource="{Binding Layers, Mode=OneWay}"
-					SelectedItem="{Binding SelectedLayer, Mode=TwoWay}">
+				<ListView Margin="0,0,0,16" ItemsSource="{Binding HistoryEntries, Mode=OneWay}">
 					<ListView.ItemTemplate>
-						<DataTemplate x:DataType="viewModels:LayerViewModel">
-							<TextBlock x:Phase="1" Text="{x:Bind Value.Id}" />
+						<DataTemplate x:DataType="viewModels:HistoryEntryViewModel">
+							<TextBlock x:Phase="1" Text="{x:Bind Name}" />
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
@@ -55,14 +53,9 @@
 				DefaultLabelPosition="Collapsed">
 				<CommandBar.PrimaryCommands>
 					<AppBarButton
-						Command="{Binding AddLayerCommand}"
-						Icon="Add"
-						Label="Add" />
-					<AppBarButton
-						Command="{Binding RemoveLayerCommand}"
-						CommandParameter="{Binding SelectedLayer.Value.Id}"
-						Icon="Remove"
-						Label="Remove" />
+						Command="{Binding UndoCommand}"
+						Icon="Undo"
+						Label="Undo" />
 				</CommandBar.PrimaryCommands>
 			</CommandBar>
 		</Grid>

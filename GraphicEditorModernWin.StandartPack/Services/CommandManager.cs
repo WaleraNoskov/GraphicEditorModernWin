@@ -2,49 +2,40 @@
 using GraphicEditorModernWin.Core.Contracts;
 using GraphicEditorModernWin.Core.Services;
 using GraphicEditorModernWin.Core.ValueTypes;
+using GraphicEditorModernWin.StandartPack.Command;
 using GraphicEditorModernWin.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using OpenCvSharp;
 
 namespace GraphicEditorModernWin.StandartPack.Services;
 
-internal class CommandManager(IServiceProvider serviceProvider, IHistoryService historyService, ILayersService layersService) : ICommandManager
+internal class CommandManager(IServiceProvider serviceProvider, IHistoryService historyService, ICommandHandler<UndoCommand> undoCommandHandler) : ICommandManager
 {
-    public Result<CommandResult> Invoke<TCommand>(TCommand command) where TCommand : ICommand
-    {
-        var handler = serviceProvider.GetRequiredService<ICommandHandler<TCommand>>();
-        if (handler is null)
-            return Result.Failure<CommandResult>($"Handler for command {typeof(TCommand).Name} not found");
+	public Result<CommandResult> Invoke<TCommand>(TCommand command) where TCommand : ICommand
+	{
+		var handler = serviceProvider.GetRequiredService<ICommandHandler<TCommand>>();
+		if (handler is null)
+			return Result.Failure<CommandResult>($"Handler for command {typeof(TCommand).Name} not found");
 
-        return handler.Execute(command);
-    }
+		var result = handler.Execute(command);
 
-    public Result Undo()
-    {
-        var entry = historyService.Pop();
+		if (result.IsSuccess)
+			historyService.Push(command, result.Value);
 
-        return entry.HasValue
-            ? ResetFrame(entry.Value.CommandResult)
-            : Result.Failure("No history entry to undo");
+		return result;
+	}
 
-    }
+	public Result Undo()
+	{
+		var entry = historyService.Pop();
+		if (entry is null)
+			return Result.Failure("No history entries for undo");
 
-    private Result ResetFrame(CommandResult commandResult)
-    {
-        var layer = layersService.GetLayerById(commandResult.LayerId);
-        if (layer is null)
-            return Result.Failure($"Layer with id {commandResult.LayerId} not found");
+		var result = undoCommandHandler.Execute(new UndoCommand(entry.Value.CommandResult));
 
-        if (commandResult.Region.Position.X < 0
-            || commandResult.Region.Position.Y < 0
-            || commandResult.Region.Position.X + commandResult.Region.Size.Width > layer.Drawing.Width
-            || commandResult.Region.Position.Y + commandResult.Region.Size.Height > layer.Drawing.Height)
-            return Result.Failure("Region is out of layer bounds");
+		if (result.IsFailure)
+			historyService.Push(entry.Value.Command, entry.Value.CommandResult);
 
-        var roi = new Mat(layer.Drawing, commandResult.Region.ToRect());
-
-        commandResult.Before.CopyTo(roi);
-
-		return Result.Success();
+		return result;
 	}
 }

@@ -1,4 +1,5 @@
-﻿using GraphicEditorModernWin.Core.Entities;
+﻿using CSharpFunctionalExtensions;
+using GraphicEditorModernWin.Core.Entities;
 using GraphicEditorModernWin.Core.Services;
 using GraphicEditorModernWin.Core.ValueTypes;
 using GraphicEditorModernWin.Utils;
@@ -11,6 +12,7 @@ internal class LayersService : ILayersService
     public IReadOnlyCollection<Layer> Layers => _layers;
 
     public event EventHandler? LayersChanged;
+    public event EventHandler<Guid>? LayerChanged;
 
     public void AddLayer(Bgra fill, int order = -1)
     {
@@ -37,6 +39,19 @@ internal class LayersService : ILayersService
         _layers.Add(layer);
 
         LayersChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public Result Edit(Layer layer)
+    {
+        if (_layers.All(l => l.Id != layer.Id))
+            return Result.Failure("Cannot find layer to replace");
+
+        var existingLayer = _layers.First(l => l.Id == layer.Id);
+        _layers.Remove(existingLayer);
+        _layers.Add(layer);
+
+        LayerChanged?.Invoke(this, layer.Id);
+        return Result.Success();
     }
 
     public Layer? GetLayerById(Guid id) => _layers.FirstOrDefault(l => l.Id == id);
