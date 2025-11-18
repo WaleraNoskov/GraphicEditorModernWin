@@ -23,7 +23,7 @@
 			<RowDefinition />
 		</Grid.RowDefinitions>
 
-		<drawingWidget:DrawingWidget Grid.RowSpan="2" Grid.ColumnSpan="3" />
+		<drawingWidget:RenderWidget Grid.RowSpan="2" Grid.ColumnSpan="3" />
 
 		<colorPaletteWidget:ColorPaletteWidget
 			Grid.Row="1"

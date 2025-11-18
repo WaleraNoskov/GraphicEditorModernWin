@@ -9,6 +9,8 @@ using GraphicEditorModernWin.Feature.Layers.ViewModels;
 using GraphicEditorModernWin.Feature.ColorPalete.ViewModels;
 using GraphicEditorModernWin.Feature.ColorPalete.Views;
 using GraphicEditorModernWin.Feature.Layers.Views;
+using GraphicEditorModernWin.Feature.Drawing.Views;
+using GraphicEditorModernWin.Feature.Drawing.ViewModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -46,7 +48,7 @@ namespace GraphicEditorModernWin
             CommandManager.InitializeForUiThread();
 
             var layersService = AppHost.Services.GetRequiredService<ILayersService>();
-            layersService.AddLayer(new Core.Entities.Layer(new Core.ValueTypes.Size(800, 600)));
+            layersService.AddLayer(new Core.ValueTypes.Bgra(255,255,255,255));
 
 			_window = AppHost.Services.GetRequiredService<MainWindow>();
 			_window.Activate();
@@ -64,6 +66,10 @@ namespace GraphicEditorModernWin
             services
                 .AddTransient<LayersWidgetViewModel>()
                 .AddTransient<LayersWidget>();
+
+            services
+                .AddTransient<RenderViewModel>()
+                .AddTransient<RenderWidget>();
 
 			services.AddTransient<MainWindow>();
 		}

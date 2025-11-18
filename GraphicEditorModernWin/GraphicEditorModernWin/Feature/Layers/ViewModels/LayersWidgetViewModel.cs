@@ -41,8 +41,7 @@ internal class LayersWidgetViewModel : NotifyPropertyChangedBase
 	public ICommand AddLayerCommand { get; private set; }
     private void OnAddLayer()
     {
-        var layer = new Layer(new Core.ValueTypes.Size(800, 600));
-        _layersService.AddLayer(layer);
+        _layersService.AddLayer(new Core.ValueTypes.Bgra(0,0,0,0));
     }
 
     public ICommand RemoveLayerCommand { get; private set; }
@@ -54,9 +53,7 @@ internal class LayersWidgetViewModel : NotifyPropertyChangedBase
     private void RestoreLayers()
     {
 		var orderedLayers = _layersService.Layers
-			.Join(_layersService.LayersOrder, l => l.Id, o => o.Value, (l, o) => new { Layer = l, Order = o.Key })
-			.OrderBy(l => l.Order)
-			.Select(l => l.Layer)
+			.OrderByDescending(l => l.Order)
 			.ToList();
 
 		Layers.Clear();

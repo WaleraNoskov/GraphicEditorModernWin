@@ -1,38 +1,40 @@
 ﻿using GraphicEditorModernWin.Core.Entities;
 using GraphicEditorModernWin.Core.Services;
+using GraphicEditorModernWin.Core.ValueTypes;
+using GraphicEditorModernWin.Utils;
 
 namespace GraphicEditorModernWin.StandartPack.Services;
 
 internal class LayersService : ILayersService
 {
     private readonly List<Layer> _layers = [];
-    private readonly Dictionary<int, Guid> _layersOrder = [];
-
     public IReadOnlyCollection<Layer> Layers => _layers;
-    public IReadOnlyDictionary<int, Guid> LayersOrder => _layersOrder;
 
     public event EventHandler? LayersChanged;
 
-    public void AddLayer(Layer layer, int order = -1)
+    public void AddLayer(Bgra fill, int order = -1)
     {
-        _layers.Add(layer);
+        var orderedLayers = _layers.OrderBy(l => l.Order);
 
-        var lastIndex = _layersOrder.Count > 0
-            ? _layersOrder.Keys.Max()
-            : -1;
+        var lastIndex = _layers.Count == 0
+            ? 0
+            : orderedLayers.Last().Order;
+
+        var layer = new Layer(new Size(800, 600));
+
+        if (fill != new Bgra(0, 0, 0, 0))
+            layer.Drawing.SetTo(fill.ToScalar());
 
         if (order < 0 || order > lastIndex)
-            _layersOrder.Add(lastIndex + 1, layer.Id);
+            layer.Order = lastIndex + 1;
         else
         {
-            var keysToShift = _layersOrder.Keys.Where(k => k >= order).OrderByDescending(k => k).ToList();
-            foreach (var key in keysToShift)
-            {
-                var layerId = _layersOrder[key];
-                _layersOrder.Remove(key);
-                _layersOrder.Add(key + 1, layerId);
-            }
+            var layersToShift = _layers.Where(l => l.Order >= order);
+            foreach (var l in layersToShift)
+                l.Order++;
         }
+
+        _layers.Add(layer);
 
         LayersChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -48,19 +50,9 @@ internal class LayersService : ILayersService
 
         _layers.Remove(layer);
 
-        var orderKey = _layersOrder.FirstOrDefault(kvp => kvp.Value == id).Key;
-        if (orderKey == 0 && !_layersOrder.ContainsKey(orderKey))
-            return;
-
-        _layersOrder.Remove(orderKey);
-        var keysToShift = _layersOrder.Keys.Where(k => k > orderKey).OrderBy(k => k).ToList();
-        foreach (var key in keysToShift)
-        {
-            var layerId = _layersOrder[key];
-            _layersOrder.Remove(key);
-            _layersOrder.Add(key - 1, layerId);
-        }
-
+        var layersToShift = _layers.Where(l => l.Order > layer.Order);
+        foreach (var l in layersToShift)
+            l.Order--;
 
         LayersChanged?.Invoke(this, EventArgs.Empty);
     }
