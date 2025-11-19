@@ -17,9 +17,14 @@
 			CornerRadius="8">
 
 			<StackPanel Orientation="Horizontal">
-				<Button Click="DecreaseZoom_Click" Style="{StaticResource SubtleButtonStyle}">
+				<RepeatButton
+					Background="Transparent"
+					BorderThickness="0"
+					Click="DecreaseZoom_Click"
+					Delay="100"
+					Interval="100">
 					<FontIcon FontSize="14" Glyph="&#xE738;" />
-				</Button>
+				</RepeatButton>
 				<TextBlock
 					x:Name="ZoomTextBlock"
 					Margin="8,0"

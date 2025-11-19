@@ -8,9 +8,9 @@ using OpenCvSharp;
 
 namespace GraphicEditorModernWin.StandartPack.CommandHandlers;
 
-public class StrokeCommandHandler(ILayersService layersService) : ICommandHandler<StrokeCommand>
+public class DrawStrokeCommandHandler(ILayersService layersService) : ICommandHandler<DrawStrokeCommand>
 {
-    public Result<CommandResult> Execute(StrokeCommand command)
+    public Result<CommandResult> Execute(DrawStrokeCommand command)
     {
         var layer = layersService.GetLayerById(command.LayerId);
 

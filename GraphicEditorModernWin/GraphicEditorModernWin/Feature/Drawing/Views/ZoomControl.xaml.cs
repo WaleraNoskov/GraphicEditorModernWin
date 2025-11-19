@@ -56,7 +56,7 @@ internal sealed partial class ZoomControl : UserControl
 		var control = (ZoomControl)d;
 		double newZoom = (double)e.NewValue;
 
-		control.ZoomTextBlock.Text = $"{newZoom * 100} %";
+		control.ZoomTextBlock.Text = $"{Math.Round(newZoom * 100)} %";
 
 		control.Command?.Execute(e.NewValue);
 		control.ZoomChanged?.Invoke(
@@ -70,13 +70,13 @@ internal sealed partial class ZoomControl : UserControl
 
 	private void IncreaseZoom()
 	{
-		if(Zoom < 5)
+		if(Zoom <= 4)
 			Zoom += 0.1;
 	}
 
 	private void DecreaseZoom()
 	{
-		if(Zoom > 0.1)
+		if(Zoom >= 0.2)
 			Zoom -= 0.1;
 	}
 }

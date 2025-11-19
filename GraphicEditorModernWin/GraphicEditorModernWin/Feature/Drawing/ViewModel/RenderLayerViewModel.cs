@@ -66,7 +66,7 @@ internal class RenderLayerViewModel : NotifyPropertyChangedBase
 			return;
 
 		var coreStroke = stroke.Select(v => new Core.ValueTypes.Position((int)v.X, (int)v.Y)).ToList();
-		var command = new StrokeCommand(_layer.Id, coreStroke, 1, _colorPaletteService.PrimaryColor);
+		var command = new DrawStrokeCommand(_layer.Id, coreStroke, 1, _colorPaletteService.PrimaryColor);
 
 		_commandManager.Invoke(command);
 	}
