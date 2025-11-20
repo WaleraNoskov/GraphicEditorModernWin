@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System.Numerics;
 using CSharpFunctionalExtensions;
 using GraphicEditorModernWin.Core.ValueTypes;
 using GraphicEditorModernWin.Feature.Drawing.ViewModel;
+using GraphicEditorModernWin.Feature.Drawing.Views.Instruments;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -18,15 +18,16 @@ namespace GraphicEditorModernWin.Feature.Drawing.Views;
 internal sealed partial class RenderLayerControl : UserControl
 {
     private RenderLayerViewModel? _viewModel;
-    private CanvasRenderTarget? _renderTarget;
 
-    private readonly List<Vector2> _currentStroke = [];
+    private IInstrument? _currentInstrument;
+    private CanvasRenderTarget? _renderTarget;
     private bool _isDrawing = false;
 
     public RenderLayerControl()
     {
         InitializeComponent();
         DrawingCanvas.CreateResources += DrawingCanvas_CreateResources;
+        _currentInstrument = new StrokeInstrument();
     }
 
     private void UserControl_DataContextChanged(Microsoft.UI.Xaml.FrameworkElement sender, Microsoft.UI.Xaml.DataContextChangedEventArgs args)
@@ -51,65 +52,63 @@ internal sealed partial class RenderLayerControl : UserControl
 
     private void DrawingCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
-        var p = e.GetCurrentPoint(DrawingCanvas);
-        if (!p.Properties.IsLeftButtonPressed || _viewModel is null)
+        var point = e.GetCurrentPoint(DrawingCanvas);
+        if (!point.Properties.IsLeftButtonPressed || _currentInstrument is null || _viewModel is null)
             return;
 
         _isDrawing = true;
-        _currentStroke.Clear();
+        var position = new Vector2((int)(point.Position.X / _viewModel.Zoom), (int)(point.Position.Y / _viewModel.Zoom));
+        _currentInstrument.StartDrawing(position);
 
-		var position = new Vector2((int)(p.Position.X / _viewModel.Zoom), (int)(p.Position.Y / _viewModel.Zoom));
-		_currentStroke.Add(position);
-
-        DrawingCanvas.Invalidate();
-    }
-
-    private void DrawingCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
-    {
-        if (!_isDrawing)
-            return;
-
-        _isDrawing = false;
-
-        if (_currentStroke.Count > 1)
-            _viewModel?.CommitStrokeCommand.Execute(_currentStroke);
-
-        _currentStroke.Clear();
         DrawingCanvas.Invalidate();
     }
 
     private void DrawingCanvas_PointerMoved(object sender, PointerRoutedEventArgs e)
     {
-        if (!_isDrawing || _viewModel is null)
+        if (!_isDrawing || _currentInstrument is null || _viewModel is null)
             return;
 
         var p = e.GetCurrentPoint(DrawingCanvas);
-        if (p.IsInContact)
-        {
-            var position = new Vector2((int)(p.Position.X / _viewModel.Zoom), (int)(p.Position.Y / _viewModel.Zoom));
-            _currentStroke.Add(position);
-            DrawingCanvas.Invalidate();
-        }
+        if (!p.IsInContact)
+            return;
+
+        var position = new Vector2((int)(p.Position.X / _viewModel.Zoom), (int)(p.Position.Y / _viewModel.Zoom));
+        _currentInstrument.MoveDrawing(position);
+        DrawingCanvas.Invalidate();
+    }
+
+    private void DrawingCanvas_PointerReleased(object sender, PointerRoutedEventArgs e)
+    {
+        if (!_isDrawing || _currentInstrument is null)
+            return;
+
+        _isDrawing = false;
+
+        var result = _currentInstrument.EndDrawing();
+        if (_viewModel?.CommitCommand?.CanExecute(result) ?? false)
+            _viewModel?.CommitCommand?.Execute(result);
+
+        DrawingCanvas.Invalidate();
     }
 
     private async void DrawingCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
     {
         if (_viewModel?.Bitmap is null)
             return;
-		var gotRenderTarget = RenderTargetFromMat(_viewModel.Bitmap);
-		if (gotRenderTarget.IsFailure)
-			return;
+        var gotRenderTarget = RenderTargetFromMat(_viewModel.Bitmap);
+        if (gotRenderTarget.IsFailure)
+            return;
 
-		var drawingSession = args.DrawingSession;
+        var drawingSession = args.DrawingSession;
         drawingSession.Antialiasing = CanvasAntialiasing.Aliased;
         drawingSession.Transform = Matrix3x2.CreateScale((float)_viewModel.Zoom);
 
-		DrawingCanvas.Width = _viewModel!.ZoomedWidth;
-		DrawingCanvas.Height = _viewModel!.ZoomedHeight;
-		CanvasBorder.Width = _viewModel!.ZoomedWidth;
-		CanvasBorder.Height = _viewModel!.ZoomedHeight;
+        DrawingCanvas.Width = _viewModel!.ZoomedWidth;
+        DrawingCanvas.Height = _viewModel!.ZoomedHeight;
+        CanvasBorder.Width = _viewModel!.ZoomedWidth;
+        CanvasBorder.Height = _viewModel!.ZoomedHeight;
 
-		args.DrawingSession.DrawImage(
+        args.DrawingSession.DrawImage(
             gotRenderTarget.Value,
             0, 0,
             new Windows.Foundation.Rect(0, 0, _viewModel.Bitmap.Width, _viewModel.Bitmap.Height),
@@ -117,14 +116,7 @@ internal sealed partial class RenderLayerControl : UserControl
             CanvasImageInterpolation.NearestNeighbor
         );
 
-        if (_currentStroke.Count > 1)
-            DrawStrokePreview(drawingSession, _currentStroke, ColorFromBgra(_viewModel?.PrimaryColor ?? new Bgra(0, 0, 0, 255)), 1);
-    }
-
-    private void DrawStrokePreview(CanvasDrawingSession ds, IReadOnlyList<Vector2> pts, Color color, float size)
-    {
-        for (int i = 1; i < pts.Count; i++)
-            ds.DrawLine(pts[i - 1], pts[i], color, size);
+        _currentInstrument?.Draw(drawingSession, ColorFromBgra(_viewModel?.PrimaryColor ?? new Bgra(0, 0, 0, 255)), 2);
     }
 
     private Color ColorFromBgra(Bgra bgra) => Color.FromArgb(bgra.A, bgra.R, bgra.G, bgra.B);
@@ -168,5 +160,40 @@ internal sealed partial class RenderLayerControl : UserControl
         {
             DrawingCanvas.Invalidate();
         }
+    }
+
+    private void DrawingCanvas_PointerExited(object sender, PointerRoutedEventArgs e)
+    {
+        if (!_isDrawing || _currentInstrument is null || _viewModel is null)
+            return;
+
+        _isDrawing = false;
+
+        var p = e.GetCurrentPoint(DrawingCanvas);
+
+        double x;
+        if (p.Position.X < 0)
+            x = 0;
+        else if (p.Position.X > DrawingCanvas.Width)
+            x = DrawingCanvas.Width;
+        else
+            x = p.Position.X;
+
+        double y;
+        if (p.Position.Y < 0)
+            y = 0;
+        if (p.Position.Y > DrawingCanvas.Height)
+            y = DrawingCanvas.Height;
+        else
+            y = p.Position.Y;
+
+        var position = new Vector2((int)(x / _viewModel.Zoom), (int)(y / _viewModel.Zoom));
+        _currentInstrument.MoveDrawing(position);
+
+        var result = _currentInstrument.EndDrawing();
+        if (_viewModel?.CommitCommand?.CanExecute(result) ?? false)
+            _viewModel?.CommitCommand?.Execute(result);
+
+        DrawingCanvas.Invalidate();
     }
 }

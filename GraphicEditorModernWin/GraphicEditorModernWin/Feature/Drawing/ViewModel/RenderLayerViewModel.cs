@@ -1,83 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Numerics;
+using GraphicEditorModernWin.Core.Contracts;
 using GraphicEditorModernWin.Core.Entities;
 using GraphicEditorModernWin.Core.Services;
 using GraphicEditorModernWin.Core.ValueTypes;
+using GraphicEditorModernWin.Feature.Drawing.Contracts;
 using GraphicEditorModernWin.Feature.Shared.Framework;
 using GraphicEditorModernWin.Feature.Shared.Framework.Commands;
 using GraphicEditorModernWin.StandartPack.Command;
-using Microsoft.Graphics.Canvas;
 using OpenCvSharp;
 
 namespace GraphicEditorModernWin.Feature.Drawing.ViewModel;
 
 internal class RenderLayerViewModel : NotifyPropertyChangedBase
 {
-	private readonly ICommandManager _commandManager;
-	private readonly IColorPaletteService _colorPaletteService;
-	private readonly ILayersService _layersService;
-	private Layer _layer;
+    private readonly ICommandManager _commandManager;
+    private readonly IColorPaletteService _colorPaletteService;
+    private readonly ILayersService _layersService;
+    private Layer _layer;
 
     public RenderLayerViewModel(Layer layer, ICommandManager commandManager, IColorPaletteService colorPaletteService, ILayersService layersService)
-	{
-		_commandManager = commandManager;
-		_colorPaletteService = colorPaletteService;
-		_layersService = layersService;
+    {
+        _commandManager = commandManager;
+        _colorPaletteService = colorPaletteService;
+        _layersService = layersService;
         _layersService.LayerChanged += _layersService_LayerChanged;
-		
-		_layer = layer;
-		_bitmap = _layer.Drawing;
 
-		CommitStrokeCommand = new RelayCommand<List<Vector2>>(OnCommitStrokeCommandExecuted);
-	}
+        _layer = layer;
+        _bitmap = _layer.Drawing;
+
+        CommitCommand = new RelayCommand<ICommitParameters>(OnCommitCommandExecuted);
+    }
 
     private Mat _bitmap;
-	public Mat Bitmap
-	{
-		get => _bitmap;
-		private set => SetField(ref _bitmap, value);
-	}
+    public Mat Bitmap
+    {
+        get => _bitmap;
+        private set => SetField(ref _bitmap, value);
+    }
 
-	private double _zoom = 1;
-	public double Zoom
+    private double _zoom = 1;
+    public double Zoom
     {
         get => _zoom;
         set
         {
             SetField(ref _zoom, value);
-			OnPropertyChanged(nameof(ZoomedWidth));
-			OnPropertyChanged(nameof(ZoomedHeight));
+            OnPropertyChanged(nameof(ZoomedWidth));
+            OnPropertyChanged(nameof(ZoomedHeight));
         }
     }
 
     public double ZoomedWidth => Bitmap.Width * Zoom;
-	public double ZoomedHeight => Bitmap.Height * Zoom;
-	public Bgra PrimaryColor => _colorPaletteService.PrimaryColor;
-	public Guid LayerId => _layer.Id;
+    public double ZoomedHeight => Bitmap.Height * Zoom;
+    public Bgra PrimaryColor => _colorPaletteService.PrimaryColor;
+    public Guid LayerId => _layer.Id;
 
-	public event EventHandler? LayerChanged;
+    public event EventHandler? LayerChanged;
 
-	public RelayCommand<List<Vector2>> CommitStrokeCommand { get; private set; }
-	private void OnCommitStrokeCommandExecuted(List<Vector2>? stroke)
-	{
-		if (stroke is null)
-			return;
+    public RelayCommand<ICommitParameters> CommitCommand { get; private set; }
+    private void OnCommitCommandExecuted(ICommitParameters? commit)
+    {
+        ICommand? command = commit switch
+        {
+            StrokeCommitParameters strokeCommitParameters => new DrawStrokeCommand(_layer.Id, strokeCommitParameters.Stroke, 1, _colorPaletteService.PrimaryColor),
+            RectangleCommitParameters rectangleCommitParameters => new DrawRectangleCommand(_layer.Id,
+                                                                                            1,
+                                                                                            rectangleCommitParameters.Rectangle,
+                                                                                            rectangleCommitParameters.DrawFrame ? _colorPaletteService.PrimaryColor : null,
+                                                                                            rectangleCommitParameters.FillFrame ? _colorPaletteService.SecondaryColor : null),
+            _ => null
+        };
 
-		var coreStroke = stroke.Select(v => new Core.ValueTypes.Position((int)v.X, (int)v.Y)).ToList();
-		var command = new DrawStrokeCommand(_layer.Id, coreStroke, 1, _colorPaletteService.PrimaryColor);
+        if (command is not null)
+            _commandManager.Invoke((dynamic)command);
+    }
 
-		_commandManager.Invoke(command);
-	}
+    private void _layersService_LayerChanged(object? sender, Guid e)
+    {
+        var newLayer = _layersService.GetLayerById(e);
+        if (newLayer is null)
+            return;
 
-	private void _layersService_LayerChanged(object? sender, Guid e)
-	{
-		var newLayer = _layersService.GetLayerById(e);
-		if (newLayer is null)
-			return;
-
-		_layer = newLayer;
-		LayerChanged?.Invoke(this, EventArgs.Empty);
-	}
+        _layer = newLayer;
+        LayerChanged?.Invoke(this, EventArgs.Empty);
+    }
 }

@@ -21,6 +21,7 @@
 			x:Name="DrawingCanvas"
 			ClearColor="Transparent"
 			Draw="DrawingCanvas_Draw"
+			PointerExited="DrawingCanvas_PointerExited"
 			PointerMoved="DrawingCanvas_PointerMoved"
 			PointerPressed="DrawingCanvas_PointerPressed"
 			PointerReleased="DrawingCanvas_PointerReleased" />

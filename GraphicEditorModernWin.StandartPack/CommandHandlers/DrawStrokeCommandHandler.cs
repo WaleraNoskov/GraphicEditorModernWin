@@ -14,47 +14,53 @@ public class DrawStrokeCommandHandler(ILayersService layersService) : ICommandHa
     {
         var layer = layersService.GetLayerById(command.LayerId);
 
-        if(layer is null)
+        if (layer is null)
             return Result.Failure<CommandResult>($"Layer with id {command.LayerId} not found");
-		if (command.Positions.Count < 2)
-			return Result.Failure<CommandResult>("Not enough points to draw stroke");
+        if (command.Positions.Count < 1)
+            return Result.Failure<CommandResult>("Not enough points to draw stroke");
 
-		var mat = layer.Drawing;
-		var points = command.Positions;
-		var color = command.Color; // Scalar(B, G, R, A)
-		var thickness = command.Thickness;
+        var mat = layer.Drawing;
+        var points = command.Positions;
+        var color = command.Color; // Scalar(B, G, R, A)
+        var thickness = command.Thickness;
 
-		var region = GetBoundingRect(points, thickness);
-		var before = new Mat(mat, region).Clone();
+        var region = GetBoundingRect(points, thickness, new Core.ValueTypes.Size(mat.Width, mat.Height));
+        var before = new Mat(mat, region).Clone();
 
-		for (int i = 1; i < points.Count; i++)
-		{
-			Cv2.Line(
-				img: mat,
-				pt1: points[i - 1].ToPoint(),
-				pt2: points[i].ToPoint(),
-				color: color.ToScalar(),
-				thickness: thickness,
-				lineType: LineTypes.AntiAlias
-			);
-		}
+        if (points.Count == 1)
+            Cv2.Circle(mat, points[0].ToPoint(), thickness, color.ToScalar(), -1, LineTypes.AntiAlias);
 
-		layersService.Edit(layer);
-		return Result.Success(new CommandResult(command.LayerId, region.ToRectangle(), before));
-	}
+        else
+            for (int i = 1; i < points.Count; i++)
+            {
+                Cv2.Line(
+                    img: mat,
+                    pt1: points[i - 1].ToPoint(),
+                    pt2: points[i].ToPoint(),
+                    color: color.ToScalar(),
+                    thickness: thickness,
+                    lineType: LineTypes.AntiAlias
+                );
+            }
 
-	private static Rect GetBoundingRect(ICollection<Position> points, int thickness)
-	{
-		var minX = points.Min(p => p.X) - thickness;
-		var minY = points.Min(p => p.Y) - thickness;
-		var maxX = points.Max(p => p.X) + thickness;
-		var maxY = points.Max(p => p.Y) + thickness;
+        layersService.Edit(layer);
+        return Result.Success(new CommandResult(command.LayerId, region.ToRectangle(), before));
+    }
 
-		return new Rect(
-			X: Math.Max(minX, 0),
-			Y: Math.Max(minY, 0),
-			Width: maxX - minX + 1,
-			Height: maxY - minY + 1
-		);
-	}
+    private static Rect GetBoundingRect(ICollection<Position> points, int thickness, Core.ValueTypes.Size imageSize)
+    {
+        var minX = points.Min(p => p.X) - thickness - 1;
+        var minY = points.Min(p => p.Y) - thickness - 1;
+        var maxX = points.Max(p => p.X) + thickness + 3;
+        var maxY = points.Max(p => p.Y) + thickness + 3;
+
+        const int antialiasReserve = 2;
+
+        var x = Math.Max(0, points.Min(p => p.X) - thickness - antialiasReserve);
+        var y = Math.Max(0, points.Min(p => p.Y) - thickness - antialiasReserve);
+        var width = Math.Min(imageSize.Width - x, points.Max(p => p.X) + thickness + antialiasReserve * 2 - x);
+        var height = Math.Min(imageSize.Height - y, points.Max(p => p.Y) + thickness + antialiasReserve * 2 - y);
+
+        return new Rect(x, y, width, height);
+    }
 }
