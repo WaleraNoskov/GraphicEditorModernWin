@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using CSharpFunctionalExtensions;
 using GraphicEditorModernWin.Core.ValueTypes;
 using GraphicEditorModernWin.Feature.Drawing.Contracts;
 using Microsoft.Graphics.Canvas;
@@ -23,8 +24,11 @@ internal class StrokeInstrument : IInstrument
         _currentStroke.Add(position);
     }
 
-    public ICommitParameters EndDrawing()
+    public Result<ICommitParameters> EndDrawing()
     {
+        if (_currentStroke.Count <= 0)
+            return Result.Failure<ICommitParameters>("No stroke points.");
+
         var result = new StrokeCommitParameters([.. _currentStroke.Select(v => new Position((int)v.X, (int)v.Y))]);
         _currentStroke.Clear();
 

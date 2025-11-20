@@ -26,6 +26,6 @@
 			HorizontalAlignment="Center"
 			VerticalAlignment="Bottom"
 			Command="{Binding SetZoomCommand}"
-			Zoom="{Binding Zoom, Mode=TwoWay}" />
+			Zoom="{Binding Zoom, Mode=OneWay}" />
 	</Grid>
 </UserControl>

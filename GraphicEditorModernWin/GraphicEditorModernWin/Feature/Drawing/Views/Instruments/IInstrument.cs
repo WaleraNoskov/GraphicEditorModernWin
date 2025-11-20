@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using GraphicEditorModernWin.Feature.Drawing.Contracts;
 using Microsoft.Graphics.Canvas;
 using Windows.UI;
@@ -14,6 +15,6 @@ internal interface IInstrument
 {
 	void StartDrawing(Vector2 position);
 	void MoveDrawing(Vector2 position);
-	ICommitParameters EndDrawing();
+	Result<ICommitParameters> EndDrawing();
 	void Draw(CanvasDrawingSession session, Color color, float size);
 }

@@ -27,7 +27,6 @@ internal sealed partial class RenderLayerControl : UserControl
     {
         InitializeComponent();
         DrawingCanvas.CreateResources += DrawingCanvas_CreateResources;
-        _currentInstrument = new StrokeInstrument();
     }
 
     private void UserControl_DataContextChanged(Microsoft.UI.Xaml.FrameworkElement sender, Microsoft.UI.Xaml.DataContextChangedEventArgs args)
@@ -39,6 +38,8 @@ internal sealed partial class RenderLayerControl : UserControl
         _viewModel = viewModel;
         _viewModel.LayerChanged += (_, _) => DrawingCanvas.Invalidate();
         _viewModel.PropertyChanged += _viewModel_PropertyChanged;
+
+        RestoreInstrument();
     }
 
     private void DrawingCanvas_CreateResources(CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
@@ -85,8 +86,12 @@ internal sealed partial class RenderLayerControl : UserControl
         _isDrawing = false;
 
         var result = _currentInstrument.EndDrawing();
-        if (_viewModel?.CommitCommand?.CanExecute(result) ?? false)
-            _viewModel?.CommitCommand?.Execute(result);
+        
+        if (result.IsFailure)
+            return;
+
+        if (_viewModel?.CommitCommand?.CanExecute(result.Value) ?? false)
+            _viewModel?.CommitCommand?.Execute(result.Value);
 
         DrawingCanvas.Invalidate();
     }
@@ -157,10 +162,25 @@ internal sealed partial class RenderLayerControl : UserControl
     private void _viewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(_viewModel.Zoom))
-        {
             DrawingCanvas.Invalidate();
+        else if (e.PropertyName == nameof(_viewModel.CurrentInstrument))
+        {
+            _currentInstrument?.EndDrawing();
+            DrawingCanvas.Invalidate();
+
+            RestoreInstrument();
         }
     }
+
+    private void RestoreInstrument()
+    {
+		_currentInstrument = _viewModel?.CurrentInstrument switch
+		{
+			Contracts.Instruments.Stroke => new StrokeInstrument(),
+			Contracts.Instruments.Rectangle => new RectangleInstrument(),
+			_ => null,
+		};
+	}
 
     private void DrawingCanvas_PointerExited(object sender, PointerRoutedEventArgs e)
     {
@@ -191,8 +211,12 @@ internal sealed partial class RenderLayerControl : UserControl
         _currentInstrument.MoveDrawing(position);
 
         var result = _currentInstrument.EndDrawing();
-        if (_viewModel?.CommitCommand?.CanExecute(result) ?? false)
-            _viewModel?.CommitCommand?.Execute(result);
+
+        if (result.IsFailure)
+            return;
+
+        if (_viewModel?.CommitCommand?.CanExecute(result.Value) ?? false)
+            _viewModel?.CommitCommand?.Execute(result.Value);
 
         DrawingCanvas.Invalidate();
     }

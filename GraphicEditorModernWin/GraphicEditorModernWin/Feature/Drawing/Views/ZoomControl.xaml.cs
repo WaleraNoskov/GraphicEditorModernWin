@@ -80,14 +80,8 @@ internal sealed partial class ZoomControl : UserControl
 			Zoom -= 0.1;
 	}
 }
-public class ZoomChangedEventArgs : EventArgs
+public class ZoomChangedEventArgs(double oldVal, double newVal) : EventArgs
 {
-	public double OldValue { get; }
-	public double NewValue { get; }
-
-	public ZoomChangedEventArgs(double oldVal, double newVal)
-	{
-		OldValue = oldVal;
-		NewValue = newVal;
-	}
+    public double OldValue { get; } = oldVal;
+    public double NewValue { get; } = newVal;
 }

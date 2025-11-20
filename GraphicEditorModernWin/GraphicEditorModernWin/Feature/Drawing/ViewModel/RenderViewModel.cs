@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Input;
 using GraphicEditorModernWin.Core.Services;
+using GraphicEditorModernWin.Feature.Drawing.Contracts;
 using GraphicEditorModernWin.Feature.Shared.Framework;
 using GraphicEditorModernWin.Feature.Shared.Framework.Commands;
 
@@ -24,13 +25,21 @@ internal class RenderViewModel : NotifyPropertyChangedBase
 
         InitializeCommand = new RelayCommand(OnInitializeCommandExecuted);
         SetZoomCommand = new RelayCommand<double>(OnSetZoomCommandExecuted);
+        SetInstrumentCommand = new RelayCommand<Instruments>(OnSetInstrumentCommandExecuted);
     }
 
     private double _zoom = 1;
     public double Zoom
     {
         get => _zoom;
-        set => SetField(ref _zoom, value);
+        private set => SetField(ref _zoom, value);
+    }
+
+    private Instruments _instrument;
+    public Instruments Instrument
+    {
+        get => _instrument;
+        private set => SetField(ref _instrument, value);
     }
 
     private readonly List<RenderLayerViewModel> _layers = [];
@@ -40,7 +49,22 @@ internal class RenderViewModel : NotifyPropertyChangedBase
     private void OnInitializeCommandExecuted() => RestoreLayers();
 
     public RelayCommand<double> SetZoomCommand { get; private set; }
-    private void OnSetZoomCommandExecuted(double zoom) => SetZoom(zoom);
+    private void OnSetZoomCommandExecuted(double zoom)
+    {
+		Zoom = zoom;
+
+		foreach (var layer in _layers)
+			layer.Zoom = zoom;
+	}
+
+    public RelayCommand<Instruments> SetInstrumentCommand { get; private set; }
+    private void OnSetInstrumentCommandExecuted(Instruments instrument)
+    {
+        Instrument = instrument;
+
+        foreach (var layer in Layers) 
+            layer.CurrentInstrument = instrument;
+    }
 
     private void RestoreLayers()
     {
@@ -54,11 +78,5 @@ internal class RenderViewModel : NotifyPropertyChangedBase
             _layers.Add(layer);
 
         OnPropertyChanged(nameof(Layers));
-    }
-
-    private void SetZoom(double zoom)
-    {
-        foreach (var layer in _layers)
-            layer.Zoom = zoom;
     }
 }

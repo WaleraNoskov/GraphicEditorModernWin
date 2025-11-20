@@ -53,6 +53,13 @@ internal class RenderLayerViewModel : NotifyPropertyChangedBase
         }
     }
 
+    private Instruments _currentInstrument;
+    public Instruments CurrentInstrument
+    {
+        get => _currentInstrument;
+        set => SetField(ref _currentInstrument, value);
+    }
+
     public double ZoomedWidth => Bitmap.Width * Zoom;
     public double ZoomedHeight => Bitmap.Height * Zoom;
     public Bgra PrimaryColor => _colorPaletteService.PrimaryColor;
