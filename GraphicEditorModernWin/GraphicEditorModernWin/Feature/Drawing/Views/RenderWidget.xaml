@@ -21,6 +21,22 @@
 			<Grid Name="LayersContainer" />
 		</ScrollView>
 
+		<GridView
+			IsItemClickEnabled="True"
+			ItemsSource="{Binding Instruments}"
+			SelectedItem="{Binding SelectedInstrument, Mode=TwoWay}">
+			<interactivity:Interaction.Behaviors>
+				<interactivity:EventTriggerBehavior EventName="SelectionChanged">
+					<interactivity:InvokeCommandAction Command="{Binding SetInstrumentCommand}" CommandParameter="{Binding SelectedInstrument}" />
+				</interactivity:EventTriggerBehavior>
+			</interactivity:Interaction.Behaviors>
+			<GridView.ItemTemplate>
+				<DataTemplate x:DataType="viewmodel:InstrumentViewModel">
+					<FontIcon Glyph="{x:Bind IconGlyph, Mode=OneWay}" />
+				</DataTemplate>
+			</GridView.ItemTemplate>
+		</GridView>
+
 		<local:ZoomControl
 			Margin="0,0,0,16"
 			HorizontalAlignment="Center"
